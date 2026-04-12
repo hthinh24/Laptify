@@ -130,10 +130,9 @@ public class ProductServiceImpl implements ProductService {
                     skuReq.getColor(),
                     skuReq.getPrice(),
                     skuReq.getStockQuantity(),
+                    imageUrls.get(i),
                     product
             );
-
-            sku.setImageUrl(imageUrls.get(i));
 
             skus.add(sku);
         }
