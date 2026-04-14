@@ -1,4 +1,5 @@
-import { Trash2, Edit3 } from 'lucide-react';
+import { Button } from '@/components/ui/button.jsx';
+import { Trash2, Edit3, Plus } from 'lucide-react';
 
 export default function CategoryTable({
   variants = [],
@@ -9,9 +10,10 @@ export default function CategoryTable({
     <div className='bg-white rounded-lg shadow-md p-6'>
       <div className='flex items-center justify-between mb-6'>
         <h2 className='text-xl font-semibold text-gray-900'>Phân loại</h2>
-        <button className='px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium text-sm'>
+        <Button className='px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium text-sm'>
+          <Plus />
           Thêm phân loại
-        </button>
+        </Button>
       </div>
 
       <div className='overflow-x-auto'>

@@ -5,6 +5,8 @@ import Pagination from '@/components/custom/Paganation.jsx';
 import ProductTable from '@/pages/admin/product-page/ProductTable.jsx';
 import ProductFilter from '@/pages/admin/product-page/ProductFilter.jsx';
 import { mockProducts, categories, manufacturers } from '@/data/mockProducts.js';
+import { Button } from '@/components/ui/button.jsx';
+import { Plus } from 'lucide-react';
 
 
 const ProductManagementPage = () => {
@@ -119,12 +121,13 @@ const ProductManagementPage = () => {
         <h2 className='text-xl font-semibold text-gray-800'>
           Danh sách sản phẩm
         </h2>
-        <button
+        <Button
           onClick={() => navigate('/admin/product-addition')}
           className='px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium'
         >
+          <Plus/>
           Thêm sản phẩm
-        </button>
+        </Button>
       </div>
 
       <ProductTable

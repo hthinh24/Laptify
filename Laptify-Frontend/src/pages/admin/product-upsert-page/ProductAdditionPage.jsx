@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Plus } from 'lucide-react';
 import ProductInfo from './ProductInfo.jsx';
 import CategoryTable from './CategoryTable.jsx';
 import { categories, manufacturers } from '@/data/mockProducts.js';
@@ -39,11 +39,11 @@ const ProductAdditionPage = () => {
     console.log('[v0] Variants:', variants);
     // API call will be implemented later
     alert('Thêm sản phẩm thành công!');
-    navigate('/admin');
+    navigate('/admin/products');
   };
 
   const handleCancel = () => {
-    navigate('/admin');
+    navigate('/admin/products');
   };
 
   return (
@@ -92,12 +92,12 @@ const ProductAdditionPage = () => {
           >
             Làm mới
           </button>
-          <button
+          <Button
             type='submit'
             className='px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium'
           >
             Thêm sản phẩm
-          </button>
+          </Button>
         </div>
       </form>
     </div>
