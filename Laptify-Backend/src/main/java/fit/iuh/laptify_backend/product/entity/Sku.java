@@ -24,6 +24,9 @@ public class Sku {
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity = 0;
 
+    @Column(name = "total_purchases", nullable = false)
+    private Integer totalPurchases = 0;
+
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 

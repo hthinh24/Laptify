@@ -12,5 +12,6 @@ public class PageResponse<T> {
     private Integer size;
     private Long totalElements;
     private Integer totalPages;
+    private Boolean hasNext;
     private T data;
 }

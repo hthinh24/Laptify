@@ -1,39 +1,103 @@
-CREATE TABLE Brands
+create table brands
 (
-    id          INTEGER PRIMARY KEY AUTO_INCREMENT,
-    code        VARCHAR(50) UNIQUE,
-    name        VARCHAR(100)       NOT NULL,
-    description TEXT,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id          int auto_increment
+        primary key,
+    code        varchar(50)  not null,
+    created_at  datetime(6)  null,
+    description text         null,
+    name        varchar(100) not null
 );
 
-CREATE TABLE categories
+create table categories
 (
-    id          VARCHAR(255) PRIMARY KEY,
-    name        VARCHAR(100)       NOT NULL,
-    description TEXT,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id          bigint       not null
+        primary key,
+    description text         null,
+    name        varchar(100) not null
 );
 
-CREATE TABLE products
+create table products
 (
-    id          VARCHAR(255) PRIMARY KEY,
-    category_id VARCHAR(255) NOT NULL,
-    name        VARCHAR(255) NOT NULL,
-    brand       INTEGER      NOT NULL,
-    description TEXT,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories (id),
-    FOREIGN KEY (brand) REFERENCES Brands (id)
+    id          varchar(255) not null
+        primary key,
+    created_at  datetime(6)  null,
+    description text         null,
+    name        varchar(255) not null,
+    brand_id    int          not null,
+    category_id bigint       not null,
+    constraint FKa3a4mpsfdf4d2y6r8ra3sc8mv
+        foreign key (brand_id) references brands (id),
+    constraint FKog2rp4qthbtt2lfyhfo32lsw9
+        foreign key (category_id) references categories (id)
 );
 
-CREATE TABLE skus
+create table roles
 (
-    sku_code       VARCHAR(100) PRIMARY KEY UNIQUE NOT NULL, -- MAC-M2-SILVER
-    product_id     VARCHAR(255)                    NOT NULL,
-    color          VARCHAR(50)                     NOT NULL,
-    price          DECIMAL(15, 2)                  NOT NULL DEFAULT 0.00,
-    stock_quantity INT                             NOT NULL DEFAULT 0,
-    image_url      VARCHAR(500),
-    FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE
+    id   bigint auto_increment
+        primary key,
+    name enum ('ADMIN', 'USER') null
 );
+
+create table skus
+(
+    sku_code        varchar(100)   not null
+        primary key,
+    color           varchar(50)    not null,
+    image_url       varchar(500)   null,
+    price           decimal(38, 2) not null,
+    stock_quantity  int            not null,
+    product_id      varchar(255)   not null,
+    total_purchases int            not null,
+    constraint FK49suh4vsoilpii18pb6j8adkp
+        foreign key (product_id) references products (id)
+);
+
+create table user_placement_infos
+(
+    id            bigint auto_increment
+        primary key,
+    address       varchar(255) null,
+    customer_name varchar(255) null,
+    is_saved      bit          not null,
+    phone_number  varchar(255) null
+);
+
+create table orders
+(
+    id                     varchar(255)                                                      not null
+        primary key,
+    order_date             datetime(6)                                                       null,
+    shipping_fee           decimal(38, 2)                                                    null,
+    status                 enum ('PACKAGING', 'PENDING', 'RECEIVED', 'RETURNED', 'SHIPPING') null,
+    total_price            decimal(38, 2)                                                    null,
+    user_placement_info_id bigint                                                            not null,
+    constraint FKp26qv8517f5vrug521uu1t720
+        foreign key (user_placement_info_id) references user_placement_infos (id)
+);
+
+create table order_details
+(
+    id                bigint auto_increment
+        primary key,
+    price_at_purchase decimal(38, 2) null,
+    quantity          int            not null,
+    order_id          varchar(255)   null,
+    sku_code          varchar(100)   not null,
+    constraint FKjyu2qbqt8gnvno9oe9j2s2ldk
+        foreign key (order_id) references orders (id),
+    constraint FKq1avcjj3dydu2578oht793fyw
+        foreign key (sku_code) references skus (sku_code)
+);
+
+create table users
+(
+    id       bigint auto_increment
+        primary key,
+    email    varchar(255) null,
+    name     varchar(255) null,
+    password varchar(255) null,
+    role_id  bigint       null,
+    constraint FKp56c1712k691lhsyewcssf40f
+        foreign key (role_id) references roles (id)
+);
+

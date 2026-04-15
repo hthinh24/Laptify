@@ -1,5 +1,9 @@
 server:
   port: 8080
+app:
+  cors:
+    enabled: true
+    allowed-origins: "*"
 spring:
   servlet:
     multipart:
@@ -18,6 +22,7 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+    show-sql: true
 
 security:
   jwt:
