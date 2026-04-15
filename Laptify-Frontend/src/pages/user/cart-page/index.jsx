@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.jsx';
 import CartTable from '@/pages/user/cart-page/CartTable.jsx';
 import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
+import { setItems } from '@/feature/checkout/checkoutSlice.js';
 
 // Mock cart data
 const mockCartItems = [
@@ -32,6 +35,9 @@ const mockCartItems = [
 ];
 
 const CartPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
   const [cartItems, setCartItems] = useState(mockCartItems);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -89,9 +95,24 @@ const CartPage = () => {
       return;
     }
 
-    // TODO: Navigate to checkout or process order
-    console.log('Checkout with items:', selectedItems);
-    alert('Thanh toán: ' + selectedItems.length + ' sản phẩm');
+    // Get selected items data
+    const selected = cartItems
+      .filter(item => selectedItems.includes(item.id))
+      .map(item => ({
+        id: item.id,
+        productName: item.productName,
+        price: item.price,
+        quantity: item.quantity,
+        subtotal: item.price * item.quantity,
+        variant: item.variant,
+        image: item.image,
+      }));
+
+    // Dispatch to Redux
+    dispatch(setItems(selected));
+
+    // Navigate to checkout
+    navigate('/checkout');
   };
 
   const totals = calculateTotals();

@@ -10,6 +10,7 @@ import OrderManagementPage from '@/pages/admin/order-page/index.jsx';
 import OrderDetailPage from '@/pages/admin/order-detail-page/index.jsx';
 import CartPage from '@/pages/user/cart-page/index.jsx';
 import ProductPage from '@/pages/client/product';
+import CheckoutPage from '@/pages/user/checkout-page/index.jsx';
 import path from 'node:path';
 
 export const router = createBrowserRouter([
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
             {
                 path: 'cart',
                 element: <CartPage />
+            },
+            {
+                path: 'checkout',
+                element: <CheckoutPage/>
             }
         ],
     },

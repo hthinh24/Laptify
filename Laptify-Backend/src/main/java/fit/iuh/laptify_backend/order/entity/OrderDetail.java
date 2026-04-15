@@ -33,4 +33,11 @@ public class OrderDetail {
     public BigDecimal getSubTotal(){
         return priceAtPurchase.multiply(BigDecimal.valueOf(quantity));
     }
+
+    public OrderDetail(BigDecimal priceAtPurchase, int quantity, Order order, Sku sku) {
+        this.priceAtPurchase = priceAtPurchase;
+        this.quantity = quantity;
+        this.order = order;
+        this.sku = sku;
+    }
 }

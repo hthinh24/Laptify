@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -18,9 +20,16 @@ import java.util.List;
 @AllArgsConstructor
 public class Order {
     @Id
-    private String id;
+    private Long id;
+
+    @CreationTimestamp
+    @Column(updatable = false)
     private Instant orderDate;
+
+    @Column(updatable = false)
     private BigDecimal totalPrice;
+
+    @Column(updatable = false)
     private BigDecimal shippingFee;
 
     @Enumerated(EnumType.STRING)
@@ -29,11 +38,17 @@ public class Order {
     @OneToMany(mappedBy = "order", orphanRemoval = true,cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_placement_info_id", nullable = false)
     private UserPlacementInfo userInfoPlacement;
 
     public BigDecimal getTotalDue(){
         return totalPrice.add(shippingFee);
+    }
+
+    public Order(UserPlacementInfo userInfoPlacement) {
+        this.orderDate = Instant.now();
+        this.status = OrderStatus.PENDING;
+        this.userInfoPlacement = userInfoPlacement;
     }
 }
