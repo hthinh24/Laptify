@@ -24,6 +24,13 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
 
     @Query("SELECT DISTINCT p FROM Product p " +
            "LEFT JOIN FETCH p.skus s " +
+           "WHERE p.category.id = :categoryId AND p.id <> :productId " +
+           "ORDER BY s.totalPurchases DESC, p.createdAt DESC")
+    @EntityGraph(attributePaths = "skus")
+    Page<Product> findRelatedProduct(Long categoryId, Long productId, Pageable pageable);
+
+    @Query("SELECT DISTINCT p FROM Product p " +
+           "LEFT JOIN FETCH p.skus s " +
            "ORDER BY s.totalPurchases DESC, p.id ASC")
     @EntityGraph(attributePaths = "skus")
     Page<Product> findBestSellerProducts(Pageable pageable);

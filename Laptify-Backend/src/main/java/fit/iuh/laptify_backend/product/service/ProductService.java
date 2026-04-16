@@ -4,6 +4,7 @@ import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.dto.request.ProductCreationRequest;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
+import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
 import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
 import fit.iuh.laptify_backend.product.dto.response.ProductResponse;
 
@@ -15,5 +16,6 @@ public interface ProductService {
     PageResponse<List<ProductResponse>> getBestSellerProducts(PageRequest page);
     PageResponse<List<ProductResponse>> getProductsByCategoryId(Long categoryId, PageRequest page);
     PageResponse<List<ProductResponse>> getProductsWithFilter (ProductFilter productFilter, PageRequest page);
+    PageResponse<List<ProductResponse>> getRelatedProducts(PageRequest page, RelatedProductFetchingRequest request);
     ProductDetailResponse getProductById(Long id);
 }

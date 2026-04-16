@@ -15,7 +15,5 @@ public class ProductDetailResponse {
     private String name;
     private String categoryId;
     private String brandId;
-    private BigDecimal price;
-    private Integer totalPurchases;
     private List<ProductSkuResponse> skus;
 }

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 const ProductPage = ({ title }) => {
   const location = useLocation();
-  const productType = location.pathname
+  const productType = location.pathname.replace(/\/$/, '');
 
   const endpoint = productType ? `http://localhost:8080/api/v1${productType}` : 'http://localhost:8080/api/v1/products/news';
 
