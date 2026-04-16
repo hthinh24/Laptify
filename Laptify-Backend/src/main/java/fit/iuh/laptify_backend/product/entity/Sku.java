@@ -6,6 +6,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,8 +33,8 @@ public class Sku {
     private Integer totalPurchases = 0;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
-    private List<MediaMetadata> mediaMetadata;
+    @Column(name = "media_metadata", columnDefinition = "json")
+    private List<MediaMetadata> mediaMetadata = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)

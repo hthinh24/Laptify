@@ -189,7 +189,7 @@ public class ProductServiceImpl implements ProductService {
                 .name(product.getName())
                 .price(firstSku.getPrice())
                 .totalPurchases(firstSku.getTotalPurchases())
-                .mediaMetadata(firstSku.getMediaMetadata().getFirst())
+                .mediaMetadata(firstSku.getMediaMetadata() != null ? firstSku.getMediaMetadata().getFirst() : null)
                 .build();
     }
 
