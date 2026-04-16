@@ -7,8 +7,9 @@ import { mockProducts } from '@/data/mockProducts';
 import ProductImageGallery from './ProductImageGallery';
 import ColorVariantSelector from './ColorVariantSelector';
 import QuantitySelector from './QuantitySelector';
-import ProductCard from './ProductCard';
+import ProductCard from '../ProductCard';
 import { Heart, Truck, RotateCcw } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
@@ -25,6 +26,7 @@ const ProductDetailPage = () => {
   const [currentSelectVariant, setCurrentSelectVariant] = useState(
     productDetail?.skus[0] || null
   );
+
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   if (!productDetail) {
@@ -35,7 +37,6 @@ const ProductDetailPage = () => {
     );
   }
 
-  // Get related products (same category, excluding current)
   const relatedProducts = useMemo(() => {
     return mockProducts
       .filter((p) => p.category === productDetail.categoryId && p.id !== productDetail.id)
@@ -44,7 +45,7 @@ const ProductDetailPage = () => {
 
   const handleVariantChange = (variant) => {
     setCurrentSelectVariant(variant);
-    setQuantity(1); // Reset quantity when changing variant
+    setQuantity(1);
   };
 
   const handleAddToCheckout = () => {
@@ -57,6 +58,7 @@ const ProductDetailPage = () => {
       color: currentSelectVariant.color,
       price: currentSelectVariant.price,
       quantity: quantity,
+      subtotal: currentSelectVariant.price * quantity,
       image: currentSelectVariant.mediaMetadataList[0]?.url || '',
     };
 
@@ -107,6 +109,8 @@ const ProductDetailPage = () => {
           {/* Description */}
           <p className='text-gray-700 leading-relaxed'>{productDetail.description}</p>
 
+          <Separator />
+
           {/* Color Variant Selector */}
           <ColorVariantSelector
             variants={productDetail.skus}
@@ -134,11 +138,10 @@ const ProductDetailPage = () => {
             </button>
             <button
               onClick={() => setIsWishlisted(!isWishlisted)}
-              className={`px-6 py-3 rounded border-2 transition ${
-                isWishlisted
-                  ? 'border-red-600 bg-red-50'
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
+              className={`px-6 py-3 rounded border-2 transition ${isWishlisted
+                ? 'border-red-600 bg-red-50'
+                : 'border-gray-300 hover:border-gray-400'
+                }`}
             >
               <Heart
                 size={20}
@@ -147,8 +150,10 @@ const ProductDetailPage = () => {
             </button>
           </div>
 
+          <Separator />
+
           {/* Service Info Cards */}
-          <div className='border-t pt-6 space-y-4'>
+          <div className='space-y-4'>
             <div className='flex items-start gap-4'>
               <Truck size={24} className='text-gray-600 flex-shrink-0 mt-1' />
               <div>

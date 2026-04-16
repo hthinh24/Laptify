@@ -30,6 +30,12 @@ const QuantitySelector = ({ quantity, maxQuantity, onQuantityChange }) => {
           const val = parseInt(e.target.value);
           if (val >= 1 && val <= maxQuantity) {
             onQuantityChange(val);
+          } else if (val < 1) {
+            onQuantityChange(1);
+          } else if (val > maxQuantity) {
+            onQuantityChange(maxQuantity);
+          } else if (isNaN(val)) {
+            onQuantityChange(1);
           }
         }}
         className='w-16 text-center border border-gray-300 rounded py-1 focus:outline-none focus:ring-2 focus:ring-red-500'

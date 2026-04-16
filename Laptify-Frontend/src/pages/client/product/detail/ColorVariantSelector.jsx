@@ -9,11 +9,10 @@ const ColorVariantSelector = ({ variants, selectedVariant, onVariantChange }) =>
           <button
             key={variant.skuCode}
             onClick={() => onVariantChange(variant)}
-            className={`px-4 py-2 rounded border-2 text-sm font-medium transition ${
-              selectedVariant.skuCode === variant.skuCode
+            className={`px-4 py-2 rounded border-2 text-sm font-medium transition ${selectedVariant.skuCode === variant.skuCode
                 ? 'border-gray-800 bg-gray-100 text-gray-800'
                 : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
-            }`}
+              }`}
           >
             {variant.color}
           </button>
