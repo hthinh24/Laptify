@@ -4,6 +4,8 @@ import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.dto.request.ProductCreationRequest;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
+import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
+import fit.iuh.laptify_backend.product.dto.response.MediaMetadataResponse;
 import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
 import fit.iuh.laptify_backend.product.dto.response.ProductResponse;
 import fit.iuh.laptify_backend.product.dto.response.ProductSkuResponse;
@@ -62,6 +64,15 @@ public class ProductServiceImpl implements ProductService {
         log.info("Filtering products with criteria: {}", productFilter);
         org.springframework.data.domain.PageRequest pageable = toPageable(page);
         Page<Product> products = productRepository.findAll(ProductSpecification.getSpecification(productFilter), pageable);
+        Page<ProductResponse> productResponses = products.map(this::mapToResponse);
+        return buildPageResponse(productResponses);
+    }
+
+    @Override
+    public PageResponse<List<ProductResponse>> getRelatedProducts(PageRequest page,
+                                                                  RelatedProductFetchingRequest request) {
+        org.springframework.data.domain.PageRequest pageable = toPageable(page);
+        Page<Product> products = productRepository.findRelatedProduct(request.getProductId(), request.getCategoryId(), pageable);
         Page<ProductResponse> productResponses = products.map(this::mapToResponse);
         return buildPageResponse(productResponses);
     }
@@ -199,7 +210,9 @@ public class ProductServiceImpl implements ProductService {
                         .skuCode(sku.getSkuCode())
                         .color(sku.getColor())
                         .price(sku.getPrice())
+                        .totalPurchases(sku.getTotalPurchases())
                         .stockQuantity(sku.getStockQuantity())
+                        .mediaMetadataList(mapToMediaMetadataResponse(sku.getMediaMetadata()))
                         .build())
                 .collect(Collectors.toList());
 
@@ -210,10 +223,23 @@ public class ProductServiceImpl implements ProductService {
                 .name(product.getName())
                 .categoryId(String.valueOf(product.getCategory().getId()))
                 .brandId(String.valueOf(product.getBrand().getId()))
-                .price(firstSku.getPrice())
-                .totalPurchases(firstSku.getTotalPurchases())
                 .skus(skuResponses)
                 .build();
+    }
+
+    private List<MediaMetadataResponse> mapToMediaMetadataResponse(List<MediaMetadata> mediaMetadata) {
+        if (mediaMetadata == null || mediaMetadata.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return mediaMetadata.stream()
+                .map(meta -> MediaMetadataResponse.builder()
+                        .url(meta.getUrl())
+                        .width(meta.getWidth())
+                        .height(meta.getHeight())
+                        .format(meta.getFormat())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private <T> PageResponse<List<T>> buildPageResponse(Page<T> page) {

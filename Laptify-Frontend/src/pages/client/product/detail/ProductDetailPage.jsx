@@ -1,9 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setItems } from '@/feature/checkout/checkoutSlice';
-import { mockProductDetails } from '@/data/mockProductDetails';
-import { mockProducts } from '@/data/mockProducts';
 import ProductImageGallery from './ProductImageGallery';
 import ColorVariantSelector from './ColorVariantSelector';
 import QuantitySelector from './QuantitySelector';
@@ -16,32 +14,69 @@ const ProductDetailPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Find product detail
-  const productDetail = useMemo(() => {
-    return mockProductDetails.find((p) => p.id === parseInt(productId));
-  }, [productId]);
+  const [productDetail, setProductDetail] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   // Initialize state
   const [quantity, setQuantity] = useState(1);
   const [currentSelectVariant, setCurrentSelectVariant] = useState(
-    productDetail?.skus[0] || null
+    productDetail?.skus?.[0] || null
   );
 
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  if (!productDetail) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    // Simulate fetching product detail by ID
+    const fetchProductDetail = async (productId) => {
+      const product = await fetch(`http://localhost:8080/api/v1/products/${productId}`);
+      if (!product.ok) {
+        setIsLoading(false);
+        setIsError(true);
+        return;
+      }
+      const data = await product.json();
+      console.log("Fetched product detail: ", data);
+
+      setProductDetail(data);
+      setIsLoading(false);
+    }
+    fetchProductDetail(productId);
+  }, [productId]);
+
+  useEffect(() => {
+    if (productDetail) {
+      const fetchRelatedProducts = async (categoryId) => {
+        const response = await fetch(`http://localhost:8080/api/v1/products/${productId}/related?category_id=${categoryId}&size=4`);
+        const data = await response.json();
+        console.log("Fetched related products: ", data);
+
+        const relatedProducts = data.data;
+        setRelatedProducts(relatedProducts);
+        setCurrentSelectVariant(productDetail?.skus?.[0] || null);
+      }
+
+      fetchRelatedProducts(productDetail.categoryId);
+    }
+  }, [productDetail]);
+
+  if (isLoading) {
     return (
       <div className='flex items-center justify-center h-96'>
-        <p className='text-gray-600'>Sản phẩm không tìm thấy</p>
+        <p className='text-gray-600'>Đang tải...</p>
       </div>
     );
   }
 
-  const relatedProducts = useMemo(() => {
-    return mockProducts
-      .filter((p) => p.category === productDetail.categoryId && p.id !== productDetail.id)
-      .slice(0, 4);
-  }, [productDetail]);
+  if (isError) {
+    return (
+      <div className='flex items-center justify-center h-96'>
+        <p className='text-gray-600'>Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.</p>
+      </div>
+    );
+  }
 
   const handleVariantChange = (variant) => {
     setCurrentSelectVariant(variant);
@@ -72,6 +107,15 @@ const ProductDetailPage = () => {
       currency: 'VND',
     }).format(price);
   };
+
+  if (!productDetail) {
+    console.log("Product detail is null or undefined");
+    return (
+      <div className='flex items-center justify-center h-96'>
+        <p className='text-gray-600'>Đang tải...</p>
+      </div>
+    );
+  }
 
   return (
     <div className='container mx-auto px-4 py-8'>
@@ -179,7 +223,7 @@ const ProductDetailPage = () => {
           <h2 className='text-xl font-bold text-gray-800'>Các sản phẩm liên quan</h2>
         </div>
 
-        {relatedProducts.length > 0 ? (
+        {relatedProducts?.length > 0 ? (
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
             {relatedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />

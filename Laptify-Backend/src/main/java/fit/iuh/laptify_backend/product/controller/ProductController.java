@@ -4,6 +4,7 @@ import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.dto.request.ProductCreationRequest;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
+import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
 import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
 import fit.iuh.laptify_backend.product.dto.response.ProductResponse;
 import fit.iuh.laptify_backend.product.service.ProductService;
@@ -54,14 +55,16 @@ public class ProductController {
         return ResponseEntity.ok(productService.getBestSellerProducts(pageRequest));
     }
 
-    @GetMapping(params = "category_id")
+    @GetMapping("/{product_id}/related")
     public ResponseEntity<PageResponse<List<ProductResponse>>> getProductsByCategoryId(
+            @PathVariable("product_id") Long productId,
             @RequestParam("category_id") Long categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size)
     {
         PageRequest pageRequest = new PageRequest(page, size);
-        return ResponseEntity.ok(productService.getProductsByCategoryId(categoryId, pageRequest));
+        RelatedProductFetchingRequest request = new RelatedProductFetchingRequest(productId, categoryId);
+        return ResponseEntity.ok(productService.getRelatedProducts(pageRequest, request));
     }
 
     @GetMapping("/search")
