@@ -1,7 +1,10 @@
 import React from 'react';
 import { Heart, ShoppingCart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -9,8 +12,15 @@ const ProductCard = ({ product }) => {
     }).format(price);
   };
 
+  const handleCardClick = () => {
+    navigate(`/products/${product.id}`);
+  };
+
   return (
-    <div className='bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition group'>
+    <div
+      onClick={handleCardClick}
+      className='bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition group cursor-pointer'
+    >
       {/* Image Container */}
       <div className='relative h-56 bg-gray-100 flex items-center justify-center overflow-hidden'>
         <img
@@ -21,10 +31,16 @@ const ProductCard = ({ product }) => {
 
         {/* Wishlist & Cart Icons */}
         <div className='absolute top-3 right-3 flex flex-col gap-2'>
-          <button className='bg-white rounded-full p-2 shadow hover:bg-red-600 hover:text-white transition'>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className='bg-white rounded-full p-2 shadow hover:bg-red-600 hover:text-white transition'
+          >
             <Heart size={18} />
           </button>
-          <button className='bg-white rounded-full p-2 shadow hover:bg-red-600 hover:text-white transition'>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className='bg-white rounded-full p-2 shadow hover:bg-red-600 hover:text-white transition'
+          >
             <ShoppingCart size={18} />
           </button>
         </div>
