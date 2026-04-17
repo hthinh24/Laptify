@@ -22,26 +22,27 @@ public class WishlistController {
     // TODO: Replace @RequestBody with @AuthenticationPrincipal to get userId from token
     @PostMapping("/add")
     public ResponseEntity<?> addToWishlist(
-            @RequestBody WishlistRequest request
+            @RequestParam(defaultValue = "1") Long userId,
+            @RequestBody Long productId
 
 //            @AuthenticationPrincipal(expression = "id") Long userId,
 //            @RequestBody Long productId,
     ) {
 
-//        WishlistRequest request = new WishlistRequest(userId, productId);
+        WishlistRequest request = new WishlistRequest(userId, productId);
         wishlistService.addToWishlist(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("Added to wishlist");
     }
 
     // TODO: Replace @RequestBody with @AuthenticationPrincipal to get userId from token
-    @DeleteMapping("/remove")
+    @DeleteMapping("/{product_id}")
     public ResponseEntity<?> removeFromWishlist(
-            @RequestBody WishlistRequest request
-
+            @RequestParam(defaultValue = "1") Long userId,
+            @PathVariable("product_id") Long productId
 //            @AuthenticationPrincipal(expression = "id") Long userId,
 //            @RequestBody Long productId
     ) {
-//        WishlistRequest request = new WishlistRequest(userId, productId);
+        WishlistRequest request = new WishlistRequest(userId, productId);
         wishlistService.removeFromWishlist(request);
         return ResponseEntity.ok("Removed from wishlist");
     }
@@ -49,20 +50,21 @@ public class WishlistController {
     // TODO: Replace @RequestBody with @AuthenticationPrincipal to get userId from token
     @GetMapping("")
     public ResponseEntity<UserWishlistResponse> getUserWishlist(
+            @RequestParam(defaultValue = "1") Long userId
 //            @AuthenticationPrincipal(expression = "id") Long userId
     ) {
-        Long userId = 1L;
         return ResponseEntity.ok(wishlistService.getUserWishlist(userId));
     }
 
     // TODO: Replace @RequestBody with @AuthenticationPrincipal to get userId from token
     @GetMapping("/products")
     public ResponseEntity<PageResponse<List<ProductInWishlistResponse>>> getUserWishlistProducts(
+            @RequestParam(defaultValue = "1") Long userId,
+
 //            @AuthenticationPrincipal(expression = "id") Long userId
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Long userId = 1L;
         PageRequest pageRequest = new PageRequest(page, size);
         return ResponseEntity.ok(wishlistService.getProductsInWishlist(userId, pageRequest));
     }
