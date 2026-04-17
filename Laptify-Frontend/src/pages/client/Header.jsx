@@ -8,7 +8,9 @@ const Header = () => {
 
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchQuery.trim()) {
-      navigate(`/products/search?keyword=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(
+        `/products/search?keyword=${encodeURIComponent(searchQuery.trim())}`,
+      );
     }
   };
 
@@ -24,7 +26,7 @@ const Header = () => {
       {/* Announcement Bar */}
       <div className="bg-black py-2 text-center text-sm text-white">
         <p>
-          Ưu đãi hè: Giảm 50% tất cả đơi bơi & Miễn phí giao hàng hỏi tốc!{" "}
+          Ưu đãi hè: Giảm 50% tất cả chuột ASUS & Miễn phí giao hàng hỏi tốc!{" "}
           <Link
             to="/shop"
             className="ml-1 font-semibold underline underline-offset-2 hover:opacity-80"
