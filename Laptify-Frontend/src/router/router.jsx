@@ -13,6 +13,7 @@ import ProductPage from '@/pages/client/product';
 import ProductDetailPage from '@/pages/client/product/detail/ProductDetailPage.jsx';
 import CheckoutPage from '@/pages/user/checkout-page/index.jsx';
 import UserWishlistPage from '@/pages/user/wishlist-page';
+import RegisterPage from '@/pages/client/RegisterPage.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -70,6 +71,10 @@ export const router = createBrowserRouter([
             {
                 path: 'checkout',
                 element: <CheckoutPage />
+            },
+            {
+                path: 'register',
+                element: <RegisterPage />
             }
         ],
     },

@@ -9,7 +9,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mariadb://localhost:3306/laptify_db}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:phanvanquan}
     driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     properties:
