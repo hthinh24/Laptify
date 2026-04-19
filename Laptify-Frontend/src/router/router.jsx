@@ -14,6 +14,8 @@ import ProductDetailPage from '@/pages/client/product/detail/ProductDetailPage.j
 import CheckoutPage from '@/pages/user/checkout-page/index.jsx';
 import UserWishlistPage from '@/pages/user/wishlist-page';
 import RegisterPage from '@/pages/client/RegisterPage.jsx';
+import LoginPage from '@/pages/client/LoginPage.jsx';
+import ForgotPasswordPage from '@/pages/client/ForgotPasswordPage.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -75,6 +77,14 @@ export const router = createBrowserRouter([
             {
                 path: 'register',
                 element: <RegisterPage />
+            },
+            {
+                path: 'login',
+                element: <LoginPage />
+            },
+            {
+                path: 'forgot-password',
+                element: <ForgotPasswordPage />
             }
         ],
     },
