@@ -16,7 +16,7 @@ const RootPage = () => {
     if (isAuthenticated) {
       console.log("Fetching user wishlist...");
       dispatch(fetchUserWishlist());
-      dispatch(getCart());
+      // dispatch(getCart());
     } else {
       console.log("User not authenticated, skipping wishlist fetch.");
     }

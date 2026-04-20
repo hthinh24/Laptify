@@ -31,11 +31,10 @@ const ProductImageGallery = ({ images }) => {
             <button
               key={index}
               onClick={() => setMainImageIndex(index)}
-              className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition ${
-                mainImageIndex === index
+              className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition ${mainImageIndex === index
                   ? 'border-gray-800'
                   : 'border-gray-200 hover:border-gray-400'
-              }`}
+                }`}
             >
               <img
                 src={image.url}

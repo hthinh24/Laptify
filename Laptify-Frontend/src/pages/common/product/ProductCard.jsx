@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
       {/* Image Container */}
       <div className='relative h-56 bg-gray-100 flex items-center justify-center overflow-hidden'>
         <img
-          src={product.image}
+          src={product?.mediaMetadata?.url}
           alt={product.name}
           className='w-full h-full object-cover group-hover:scale-105 transition'
         />
