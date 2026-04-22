@@ -16,6 +16,7 @@ import UserWishlistPage from '@/pages/user/wishlist-page';
 import RegisterPage from '@/pages/client/RegisterPage.jsx';
 import LoginPage from '@/pages/client/LoginPage.jsx';
 import ForgotPasswordPage from '@/pages/client/ForgotPasswordPage.jsx';
+import AboutPage from '@/pages/client/about/AboutPage.jsx';
 
 export const router = createBrowserRouter([
     {
@@ -85,6 +86,10 @@ export const router = createBrowserRouter([
             {
                 path: 'forgot-password',
                 element: <ForgotPasswordPage />
+            },
+            {
+                path: 'about',
+                element: <AboutPage />
             }
         ],
     },
