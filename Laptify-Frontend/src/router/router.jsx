@@ -18,6 +18,7 @@ import LoginPage from "@/pages/client/LoginPage.jsx";
 import ForgotPasswordPage from "@/pages/client/ForgotPasswordPage.jsx";
 import ContactPage from "@/pages/client/ContactPage.jsx";
 import AboutPage from "@/pages/client/about/AboutPage.jsx";
+import NotFoundPage from "@/pages/client/NotFoundPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -102,6 +103,11 @@ export const router = createBrowserRouter([
       {
         path: "about",
         element: <AboutPage />,
+      },
+
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },
