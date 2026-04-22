@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { authService } from "@/services/auth/authService.js";
+import { loginSuccess, loginFailure } from "@/feature/auth/authSlice.js";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import signUpImage from "@/assets/thumbnail.png";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -90,6 +93,12 @@ const LoginPage = () => {
         password: formData.password,
       });
 
+      // Dispatch login success to Redux with user data
+      dispatch(loginSuccess({
+        email: formData.email,
+        name: formData.email.split('@')[0] // Use email prefix as name for demo
+      }));
+
       setNotification({
         type: "success",
         message: "Đăng nhập thành công! Đang chuyển hướng...",
@@ -99,6 +108,7 @@ const LoginPage = () => {
         navigate("/");
       }, 2000);
     } catch (error) {
+      dispatch(loginFailure(error.message || "Đăng nhập thất bại"));
       setNotification({
         type: "error",
         message: error.message || "Đăng nhập thất bại. Vui lòng thử lại.",
