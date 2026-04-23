@@ -39,10 +39,4 @@ public class User {
         this.name = name;
     }
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
-        if (cart != null) {
-            cart.setUser(this);
-        }
-    }
 }

@@ -18,13 +18,13 @@ export default function ProductInfo({
       </h2>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {/* Product Code - Only in Updating Mode */}
+        {/* Product id - Only in Updating Mode */}
         {!isAdditionMode && (
           <CustomInput
             label='Mã sản phẩm'
             placeholder='Mã sản phẩm'
-            value={formData.code || ''}
-            onChange={(e) => onInputChange('code', e.target.value)}
+            value={formData.id || ''}
+            onChange={(e) => onInputChange('id', e.target.value)}
             disabled={true}
           />
         )}

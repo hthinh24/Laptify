@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Cart {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
@@ -27,6 +28,7 @@ public class Cart {
 
     public Cart(User user) {
         this.user = user;
+        this.cartDetails = new java.util.ArrayList<>();
     }
 
     public void addItem(CartDetail cartDetail){

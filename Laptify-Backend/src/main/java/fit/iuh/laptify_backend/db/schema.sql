@@ -67,7 +67,7 @@ create table users
 
 create table carts
 (
-    id      bigint not null
+    id      bigint auto_increment
         primary key,
     user_id bigint null,
     constraint UK64t7ox312pqal3p7fg9o503c2

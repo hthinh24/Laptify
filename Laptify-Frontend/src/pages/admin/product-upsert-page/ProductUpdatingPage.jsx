@@ -3,15 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import ProductInfo from './ProductInfo.jsx';
 import CategoryTable from './CategoryTable.jsx';
-import { categories, brands, mockProducts } from '@/data/mockProducts.js';
-import { Button } from '@/components/ui/button.jsx';
+import { categories, brands } from '@/data/mockProducts.js';
+import { getProductById } from '@/services/productApi.js';
 
 const ProductUpdatingPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [formData, setFormData] = useState({
-    code: '',
+    id: '',
     name: '',
     totalQuantity: '',
     brandId: '',
@@ -24,43 +24,27 @@ const ProductUpdatingPage = () => {
 
   useEffect(() => {
     // Simulate fetching product data by ID
-    const product = mockProducts.find((p) => p.id === parseInt(id));
-    if (product) {
-      setFormData({
-        code: product.code,
-        name: product.name,
-        totalQuantity: product.quantity,
-        brandId: product.brandId || '',
-        categoryId: product.categoryId || '',
-        description: product.description,
-      });
+   const fecthProduct = async () => {
+     const product = (await getProductById(id)).data.data;
+     if (product) {
+       setFormData({
+         id: product.id,
+         name: product.name,
+         totalQuantity: product.quantity,
+         brandId: product.brandId || 1,
+         categoryId: product.categoryId || 1,
+         description: product.description,
+       });cd  
 
-      // Mock variants data
-      setVariants([
-        {
-          id: 1,
-          color: 'Đỏ',
-          price: 210000000,
-          quantity: 2,
-          image: 'https://via.placeholder.com/40',
-        },
-        {
-          id: 2,
-          color: 'Xanh lam',
-          price: 210000000,
-          quantity: 2,
-          image: 'https://via.placeholder.com/40',
-        },
-        {
-          id: 3,
-          color: 'Xanh dương',
-          price: 210000000,
-          quantity: 2,
-          image: 'https://via.placeholder.com/40',
-        },
-      ]);
-    }
-    setLoading(false);
+
+       setVariants(product.skus)
+     }
+     setLoading(false);
+   }
+   if(id){
+     fecthProduct(id);
+   }
+
   }, [id]);
 
   const handleInputChange = (field, value) => {

@@ -24,7 +24,6 @@ public class CartServiceImpl implements CartService {
     private final ProductRepository productRepository;
     private final AuthService authService;
 
-
     @Override
     public CartResponse getSelfCart() {
         Cart cart = authService.getCurrentUser().getCart();

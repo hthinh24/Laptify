@@ -5,7 +5,7 @@ import cartReducer from './cart/cartSlice.js'
 import authReducer from './auth/authSlice.js'
 
 const store = configureStore({
-  reducer : {
+  reducer: {
     wishlist: wishlistReducer,
     checkout: checkoutReducer,
     cart: cartReducer,

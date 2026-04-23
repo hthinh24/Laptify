@@ -14,6 +14,8 @@ public class ProductDetailResponse {
     private String id;
     private String name;
     private String categoryId;
+    private String categoryName;
     private String brandId;
+    private String brandName;
     private List<ProductSkuResponse> skus;
 }
