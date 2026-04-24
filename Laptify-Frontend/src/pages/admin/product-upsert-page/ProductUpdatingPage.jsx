@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import ProductInfo from './ProductInfo.jsx';
@@ -13,7 +13,6 @@ const ProductUpdatingPage = () => {
   const [formData, setFormData] = useState({
     id: '',
     name: '',
-    totalQuantity: '',
     brandId: '',
     categoryId: '',
     description: '',
@@ -25,16 +24,16 @@ const ProductUpdatingPage = () => {
   useEffect(() => {
     // Simulate fetching product data by ID
    const fecthProduct = async () => {
-     const product = (await getProductById(id)).data.data;
+     const product = (await getProductById(id)).data;
+     console.log(product)
      if (product) {
        setFormData({
          id: product.id,
          name: product.name,
-         totalQuantity: product.quantity,
          brandId: product.brandId || 1,
          categoryId: product.categoryId || 1,
          description: product.description,
-       });cd  
+       });
 
 
        setVariants(product.skus)
@@ -47,9 +46,16 @@ const ProductUpdatingPage = () => {
 
   }, [id]);
 
+    const totalStockQuantity = useMemo(() => {
+      return variants.reduce((sum, item) => {
+        return sum + item.stockQuantity;
+      }, 0);
+    }, [variants]);
+
+
   const handleInputChange = (field, value) => {
     // Don't allow editing of code and totalQuantity
-    if (field === 'code' || field === 'totalQuantity') {
+    if (field === 'id' || field === 'totalQuantity') {
       return;
     }
 
@@ -120,6 +126,7 @@ const ProductUpdatingPage = () => {
           onInputChange={handleInputChange}
           categories={categories}
           brands={brands}
+          totalStockQuantity={totalStockQuantity}
         />
 
         {/* Category Table Section */}

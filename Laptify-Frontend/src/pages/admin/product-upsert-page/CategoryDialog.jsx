@@ -10,7 +10,7 @@ export default function CategoryDialog({
   mode = 'create', // 'create' or 'update'
 }) {
   const [formData, setFormData] = useState({
-    quantity: '',
+    stockQuantity: '',
     color: '',
     price: '',
   });
@@ -23,16 +23,18 @@ export default function CategoryDialog({
   useEffect(() => {
     if (editingVariant && mode === 'update') {
       setFormData({
-        quantity: editingVariant.quantity || '',
+        stockQuantity: editingVariant.stockQuantity || '',
         color: editingVariant.color || '',
         price: editingVariant.price || '',
       });
-      if (editingVariant.image) {
-        setPreviewImage(editingVariant.image);
+      if (
+        editingVariant.mediaMetadataList &&
+        editingVariant.mediaMetadataList.length > 0
+      ) {
+        setPreviewImage(editingVariant.mediaMetadataList[0].url);
+        setUploadedImages(editingVariant.mediaMetadataList);
       }
-      if (editingVariant.images) {
-        setUploadedImages(editingVariant.images);
-      }
+
     }
   }, [editingVariant, mode, isOpen]);
 
@@ -81,14 +83,14 @@ export default function CategoryDialog({
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.quantity) newErrors.quantity = 'Số lượng là bắt buộc';
+    if (!formData.stockQuantity) newErrors.stockQuantity = 'Số lượng là bắt buộc';
     if (!formData.color.trim()) newErrors.color = 'Màu sắc là bắt buộc';
     if (!formData.price) newErrors.price = 'Giá là bắt buộc';
     if (isNaN(formData.price) || parseFloat(formData.price) <= 0) {
       newErrors.price = 'Giá phải là số dương';
     }
-    if (isNaN(formData.quantity) || parseInt(formData.quantity) < 0) {
-      newErrors.quantity = 'Số lượng phải là số không âm';
+    if (isNaN(formData.stockQuantity) || parseInt(formData.stockQuantity) < 0) {
+      newErrors.stockQuantity = 'Số lượng phải là số không âm';
     }
 
 
@@ -103,7 +105,7 @@ export default function CategoryDialog({
     if (!validateForm()) return;
 
     const submitData = {
-      quantity: parseInt(formData.quantity),
+      stockQuantity: parseInt(formData.stockQuantity),
       color: formData.color,
       price: parseFloat(formData.price),
       image: previewImage,
@@ -117,7 +119,7 @@ export default function CategoryDialog({
 
   const handleReset = () => {
     setFormData({
-      quantity: '',
+      stockQuantity: '',
       color: '',
       price: '',
     });
@@ -159,9 +161,9 @@ export default function CategoryDialog({
             <CustomInput
               label='Số lượng'
               placeholder='Nhập số lượng'
-              value={formData.quantity}
-              onChange={(e) => handleInputChange('quantity', e.target.value)}
-              error={errors.quantity}
+              value={formData.stockQuantity}
+              onChange={(e) => handleInputChange('stockQuantity', e.target.value)}
+              error={errors.stockQuantity}
               type='number'
             />
 
@@ -220,7 +222,7 @@ export default function CategoryDialog({
                       className='relative group rounded-lg overflow-hidden bg-white'
                     >
                       <img
-                        src={image.src}
+                        src={image.url}
                         alt={image.name}
                         className='w-full h-24 object-cover'
                       />

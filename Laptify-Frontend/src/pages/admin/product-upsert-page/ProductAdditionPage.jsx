@@ -20,6 +20,7 @@ const ProductAdditionPage = () => {
   });
 
   const [variants, setVariants] = useState([]);
+  const [isUploading, setUploading] = useState(false) 
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -72,6 +73,7 @@ const ProductAdditionPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setUploading(true)
       const skus = await Promise.all(
         variants.map(async (variant) => {
           const images = await Promise.all(
@@ -95,15 +97,15 @@ const ProductAdditionPage = () => {
         skus,
       };
     
-      console.log(payload);
-
-      const res = (await createProduct(payload)).data.data;
+      const res = (await createProduct(payload)).data;
       
       toast.success('Tạo sản phẩm thành công');
-      navigate(`/admin/product-updating/${res.productId}`);
+      navigate(`/admin/product-updating/${res.id}`);
     } catch (e) {
       toast.error(getErrorMessage(e));
       console.error(e);
+    }finally{
+      setUploading(false)
     }
   };
 
@@ -157,10 +159,11 @@ const ProductAdditionPage = () => {
             Làm mới
           </button>
           <button
+            disabled={isUploading}
             type='submit'
             className='px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium'
           >
-            Thêm sản phẩm
+            {isUploading ? "...Đang thêm sản phẩm" : "Thêm sản phẩm"}
           </button>
         </div>
       </form>

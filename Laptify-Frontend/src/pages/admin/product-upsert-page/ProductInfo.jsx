@@ -8,8 +8,12 @@ export default function ProductInfo({
   onInputChange,
   categories = [],
   brands = [],
+  totalStockQuantity
 }) {
   const isAdditionMode = mode === 'addition';
+
+  const category = categories.find(item => item.id == formData.categoryId)
+  const brand = brands.find((item) => item.id == formData.brandId);
 
   return (
     <div className='bg-white rounded-lg shadow-md p-6 mb-6 space-y-4'>
@@ -40,10 +44,9 @@ export default function ProductInfo({
         {/* Total Quantity - Only in Updating Mode, Disabled */}
         {!isAdditionMode && (
           <CustomInput
-            label='Số lượng'
+            label='Tổng số lượng'
             placeholder='Số lượng'
-            value={formData.totalQuantity || ''}
-            onChange={(e) => onInputChange('totalQuantity', e.target.value)}
+            value={totalStockQuantity}
             disabled={true}
           />
         )}
@@ -54,7 +57,7 @@ export default function ProductInfo({
           label='Hãng sản xuất'
           placeholder='Chọn hãng sản xuất'
           options={brands}
-          value={formData.brandId || ''}
+          value={brand ? brand.value : ""}
           onChange={(value) => onInputChange('brandId', value)}
         />
 
@@ -64,7 +67,7 @@ export default function ProductInfo({
           label='Danh mục'
           placeholder='Chọn danh mục'
           options={categories}
-          value={formData.categoryId || ''}
+          value={category? category.value: ""}
           onChange={(value) => onInputChange('categoryId', value)}
         />
       </div>

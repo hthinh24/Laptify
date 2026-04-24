@@ -95,12 +95,12 @@ export default function CategoryTable({ variants = [], onEdit, onDelete, onAddVa
                     })}
                   </td>
                   <td className='px-4 py-4 text-sm text-gray-700'>
-                    {variant.quantity}
+                    {variant.stockQuantity}
                   </td>
                   <td className='px-4 py-4 text-center'>
-                    {variant.image ? (
+                    {variant.mediaMetadataList && variant.mediaMetadataList.length > 0 ? (
                       <img
-                        src={variant.image}
+                        src={variant.mediaMetadataList[0].url}
                         alt={variant.color}
                         className='w-10 h-10 rounded object-cover'
                       />
