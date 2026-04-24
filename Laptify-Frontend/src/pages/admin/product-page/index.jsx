@@ -5,7 +5,7 @@ import ProductTable from '@/pages/admin/product-page/ProductTable.jsx';
 import ProductFilter from '@/pages/admin/product-page/ProductFilter.jsx';
 import { Button } from '@/components/ui/button.jsx';
 import { Plus } from 'lucide-react';
-import { getProducts, getProductSummaries } from '@/services/productApi.js';
+import {getProductSummaries } from '@/services/productApi.js';
 import { getErrorMessage } from '@/lib/axiosClient.js';
 import { toast } from 'sonner';
 
@@ -18,18 +18,16 @@ const ProductManagementPage = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
   const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try{
-        const response = await getProductSummaries({ page: 0, size: itemsPerPage });
-        const { data, totalPages: pages, totalElements: elements } = response.data;
+        const response = await getProductSummaries({ page: currentPage - 1, size: itemsPerPage });
+        const { data, totalPages: pages} = response.data;
         setProducts(data);
         setFilteredProducts(data);
         setTotalPages(pages);
-        setTotalElements(elements);
       }catch(e){
         const message = getErrorMessage(e, "Lấy dánh sách sản phẩm thất bại")
         toast.error(message)
@@ -38,7 +36,7 @@ const ProductManagementPage = () => {
       }
     }
     fetchProducts()
-  } ,[])
+  } ,[currentPage, itemsPerPage])
 
   const [filters, setFilters] = useState({
     id: '',
@@ -126,6 +124,7 @@ const ProductManagementPage = () => {
     navigate(`/admin/product-updating/${id}`);
   };
 
+
   return (
     <div>
       <h1 className='text-3xl font-bold text-gray-900 mb-6'>
@@ -153,7 +152,7 @@ const ProductManagementPage = () => {
       </div>
 
       <ProductTable
-        products={filteredProducts}
+        products={products}
         onDelete={handleDelete}
         onEdit={handleEdit}
         currentPage={currentPage}

@@ -4,12 +4,7 @@ export default function ProductTable({
   products,
   onDelete,
   onEdit,
-  currentPage,
-  itemsPerPage,
 }) {
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className='bg-white rounded-lg shadow-md overflow-hidden'>
@@ -41,14 +36,14 @@ export default function ProductTable({
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-200'>
-            {currentItems.length === 0 ? (
+            {products.length === 0 ? (
               <tr>
                 <td colSpan='7' className='px-6 py-4 text-center text-gray-500'>
                   Không có dữ liệu
                 </td>
               </tr>
             ) : (
-              currentItems.map((product) => (
+              products.map((product) => (
                 <tr key={product.id} className='hover:bg-gray-50 transition'>
                   <td className='px-6 py-4 text-sm text-gray-900'>
                     {product.id}
