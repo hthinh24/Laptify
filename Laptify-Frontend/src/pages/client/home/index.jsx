@@ -6,8 +6,33 @@ import BestSellingSection from "./components/BestSellingSection";
 import KeyboardShowcase from "./components/KeyboardShowcase";
 import TrendingProductsSection from "./components/TrendingProductsSection";
 import BenefitsSection from "./components/BenefitsSection";
+import useScrollAnimation from "@/hooks/useScrollAnimation";
 
 const HomePage = () => {
+  const heroBrandRef = useScrollAnimation({
+    threshold: 0.5,
+    rootMargin: "0px 0px -50px 0px",
+    animationClass: "animate-fade-in-slide-up",
+  });
+
+  const heroTitleRef = useScrollAnimation({
+    threshold: 0.5,
+    rootMargin: "0px 0px -50px 0px",
+    animationClass: "animate-fade-in-slide-up",
+  });
+
+  const heroCTARef = useScrollAnimation({
+    threshold: 0.5,
+    rootMargin: "0px 0px -50px 0px",
+    animationClass: "animate-fade-in-slide-up",
+  });
+
+  const heroImageRef = useScrollAnimation({
+    threshold: 0.5,
+    rootMargin: "0px 0px -50px 0px",
+    animationClass: "animate-slide-in-right",
+  });
+
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Main Content */}
@@ -19,16 +44,19 @@ const HomePage = () => {
 
           {/* Hero Banner - ASUS ROG Promo */}
           <div className="lg:col-span-3">
-            <div className="bg-black rounded-lg overflow-hidden flex items-center justify-between h-full relative">
+            <div className="bg-black rounded-lg overflow-hidden flex items-center justify-between h-full relative hover:shadow-2xl transition-shadow duration-300">
               {/* Left Content */}
               <div className="z-10 text-white flex-1 p-8 md:p-12">
                 {/* Brand Header: Logo + Text */}
-                <div className="flex items-center gap-3 mb-4 opacity-90">
+                <div
+                  ref={heroBrandRef}
+                  className="flex items-center gap-3 mb-4 opacity-0 opacity-90 hover:opacity-100 transition-opacity"
+                >
                   {/* Logo Container */}
                   <img
                     src="/src/assets/rog-strix-logo.png"
                     alt="ROG Logo"
-                    className="w-8 h-8 object-contain" // Điều chỉnh kích thước logo tại đây
+                    className="w-8 h-8 object-contain"
                   />
                   {/* Brand Text */}
                   <span className="text-sm font-semibold uppercase tracking-wider">
@@ -37,7 +65,10 @@ const HomePage = () => {
                 </div>
 
                 {/* Main Headline */}
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                <h2
+                  ref={heroTitleRef}
+                  className="text-4xl md:text-5xl font-bold mb-6 leading-tight opacity-0"
+                >
                   Voucher giảm
                   <br />
                   đến 10%
@@ -45,30 +76,26 @@ const HomePage = () => {
 
                 {/* CTA Button */}
                 <Link
+                  ref={heroCTARef}
                   to="/products/search"
-                  className="inline-flex items-center text-white font-semibold text-base hover:text-red-500 transition"
+                  className="inline-flex items-center text-white font-semibold text-base hover:text-red-500 transition-all duration-300 hover:scale-110 opacity-0 group"
                 >
                   Mua ngay
-                  <span className="ml-2 text-xl">→</span>
+                  <span className="ml-2 text-xl group-hover:translate-x-1 transition-transform">→</span>
                 </Link>
               </div>
 
               {/* Right Image Container */}
-              <div className="hidden md:block relative flex-1 h-full">
+              <div
+                ref={heroImageRef}
+                className="hidden md:block relative flex-1 h-full opacity-0"
+              >
                 <img
                   src="/src/assets/asus-rog-strix.png"
                   alt="ASUS ROG Strix Scar"
-                  className="absolute -right-21 top-1/2 -translate-y-1/2 h-[120%] w-auto max-w-none object-contain"
+                  className="absolute -right-21 top-1/2 -translate-y-1/2 h-[120%] w-auto max-w-none object-contain hover:scale-110 transition-transform duration-300"
                 />
               </div>
-
-              {/* Carousel Dots */}
-              {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-                <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-              </div> */}
             </div>
           </div>
         </div>
