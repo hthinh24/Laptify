@@ -57,16 +57,16 @@ export default function ProductTable({
                     {product.name}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.category}
+                    {product.categoryName}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.manufacturer}
+                    {product.brandName}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.quantity}
+                    {product.stockQuantity}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.price.toLocaleString('vi-VN', {
+                    {product.displayPrice.toLocaleString('vi-VN', {
                       style: 'currency',
                       currency: 'VND',
                     })}

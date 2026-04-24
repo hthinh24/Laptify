@@ -7,6 +7,7 @@ import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
 import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
 import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
 import fit.iuh.laptify_backend.product.dto.response.ProductResponse;
+import fit.iuh.laptify_backend.product.dto.response.ProductSummaryResponse;
 import fit.iuh.laptify_backend.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +82,15 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductDetailResponse> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    @GetMapping("/summaries")
+    public ResponseEntity<PageResponse<List<ProductSummaryResponse>>> getProductSummaries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size)
+    {
+        PageRequest pageRequest = new PageRequest(page, size);
+        return ResponseEntity.ok(productService.getProductsSummary(pageRequest));
     }
 }
 

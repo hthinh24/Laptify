@@ -5,10 +5,7 @@ import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.dto.request.ProductCreationRequest;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
 import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
-import fit.iuh.laptify_backend.product.dto.response.MediaMetadataResponse;
-import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
-import fit.iuh.laptify_backend.product.dto.response.ProductResponse;
-import fit.iuh.laptify_backend.product.dto.response.ProductSkuResponse;
+import fit.iuh.laptify_backend.product.dto.response.*;
 import fit.iuh.laptify_backend.product.entity.*;
 import fit.iuh.laptify_backend.product.repository.BrandRepository;
 import fit.iuh.laptify_backend.product.repository.CategoryRepository;
@@ -92,6 +89,13 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
         return mapToProductDetailResponse(product);
+    }
+
+    @Override
+    public PageResponse<List<ProductSummaryResponse>> getProductsSummary(PageRequest page) {
+        org.springframework.data.domain.PageRequest pageable = toPageable(page);
+        Page<ProductSummaryResponse> products = productRepository.findAllProductsSummary(pageable);
+        return buildPageResponse(products);
     }
 
     @Override
@@ -241,7 +245,9 @@ public class ProductServiceImpl implements ProductService {
                 .id(String.valueOf(product.getId()))
                 .name(product.getName())
                 .categoryId(String.valueOf(product.getCategory().getId()))
+                .categoryName(product.getCategory().getName())
                 .brandId(String.valueOf(product.getBrand().getId()))
+                .brandName(product.getBrand().getName())
                 .skus(skuResponses)
                 .build();
     }

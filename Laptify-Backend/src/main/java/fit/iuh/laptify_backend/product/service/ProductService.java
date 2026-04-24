@@ -7,6 +7,7 @@ import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
 import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
 import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
 import fit.iuh.laptify_backend.product.dto.response.ProductResponse;
+import fit.iuh.laptify_backend.product.dto.response.ProductSummaryResponse;
 
 import java.util.List;
 
@@ -19,4 +20,5 @@ public interface ProductService {
     PageResponse<List<ProductResponse>> getProductsWithFilter (ProductFilter productFilter, PageRequest page);
     PageResponse<List<ProductResponse>> getRelatedProducts(PageRequest page, RelatedProductFetchingRequest request);
     ProductDetailResponse getProductById(Long id);
+    PageResponse<List<ProductSummaryResponse>> getProductsSummary(PageRequest page);
 }

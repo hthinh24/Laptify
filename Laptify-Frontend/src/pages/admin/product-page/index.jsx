@@ -5,28 +5,31 @@ import ProductTable from '@/pages/admin/product-page/ProductTable.jsx';
 import ProductFilter from '@/pages/admin/product-page/ProductFilter.jsx';
 import { Button } from '@/components/ui/button.jsx';
 import { Plus } from 'lucide-react';
-import { getProducts } from '@/services/productApi.js';
+import { getProducts, getProductSummaries } from '@/services/productApi.js';
 import { getErrorMessage } from '@/lib/axiosClient.js';
 import { toast } from 'sonner';
 
 
 const ProductManagementPage = () => {
   const navigate = useNavigate();
+  
   const [isLoading, setIsLoading] = useState(true)
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
   const itemsPerPage = 5;
-
 
   useEffect(() => {
     const fetchProducts = async () => {
       try{
-        const res = (await getProducts({ page: 0, size: itemsPerPage })).data
-          .data;
-
-        setProducts(res)
-        setFilteredProducts(res)
+        const response = await getProductSummaries({ page: 0, size: itemsPerPage });
+        const { data, totalPages: pages, totalElements: elements } = response.data;
+        setProducts(data);
+        setFilteredProducts(data);
+        setTotalPages(pages);
+        setTotalElements(elements);
       }catch(e){
         const message = getErrorMessage(e, "Lấy dánh sách sản phẩm thất bại")
         toast.error(message)
@@ -34,13 +37,12 @@ const ProductManagementPage = () => {
         setIsLoading(false)
       }
     }
-
     fetchProducts()
   } ,[])
 
   const [filters, setFilters] = useState({
-    productCode: '',
-    productName: '',
+    id: '',
+    name: '',
     category: '',
     manufacturer: '',
   });
@@ -55,11 +57,11 @@ const ProductManagementPage = () => {
   const handleSearch = () => {
     const filtered = products.filter((product) => {
       const matchCode =
-        filters.productCode === '' ||
-        product.code.toLowerCase().includes(filters.productCode.toLowerCase());
+        filters.id === '' ||
+        product.code.toLowerCase().includes(filters.id.toLowerCase());
       const matchName =
-        filters.productName === '' ||
-        product.name.toLowerCase().includes(filters.productName.toLowerCase());
+        filters.name === '' ||
+        product.name.toLowerCase().includes(filters.name.toLowerCase());
       const matchCategory =
         filters.category === '' ||
         product.category.toLowerCase().includes(filters.category.toLowerCase());
@@ -78,8 +80,8 @@ const ProductManagementPage = () => {
 
   const handleClear = () => {
     setFilters({
-      productCode: '',
-      productName: '',
+      id: '',
+      name: '',
       category: '',
       manufacturer: '',
     });
@@ -94,15 +96,15 @@ const ProductManagementPage = () => {
       setFilteredProducts(
         updated.filter((product) => {
           const matchCode =
-            filters.productCode === '' ||
+            filters.id === '' ||
             product.code
               .toLowerCase()
-              .includes(filters.productCode.toLowerCase());
+              .includes(filters.id.toLowerCase());
           const matchName =
-            filters.productName === '' ||
+            filters.name === '' ||
             product.name
               .toLowerCase()
-              .includes(filters.productName.toLowerCase());
+              .includes(filters.name.toLowerCase());
           const matchCategory =
             filters.category === '' ||
             product.category
@@ -123,8 +125,6 @@ const ProductManagementPage = () => {
   const handleEdit = (id) => {
     navigate(`/admin/product-updating/${id}`);
   };
-
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   return (
     <div>

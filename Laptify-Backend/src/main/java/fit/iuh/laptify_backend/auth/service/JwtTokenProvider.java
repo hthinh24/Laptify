@@ -57,13 +57,11 @@ public class JwtTokenProvider {
                     .expirationTime(expiryDate)
                     .build();
 
-            // Create signed JWT
             SignedJWT signedJWT = new SignedJWT(
                     new JWSHeader.Builder(JWSAlgorithm.HS256).build(),
                     claimsSet
             );
 
-            // Sign with HMAC-SHA512
             signedJWT.sign(new MACSigner(getSecretKey()));
 
             return new JwtGenerationDto(jid, signedJWT.serialize());
