@@ -49,7 +49,8 @@ public class Order {
         return totalPrice.add(shippingFee);
     }
 
-    public Order(UserPlacementInfo userInfoPlacement) {
+    public Order(Long id, UserPlacementInfo userInfoPlacement) {
+        this.id = id;
         this.orderDate = Instant.now();
         this.status = OrderStatus.PENDING;
         this.userInfoPlacement = userInfoPlacement;

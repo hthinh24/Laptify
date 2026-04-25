@@ -25,8 +25,16 @@ export default function OrderItemSection({ items = [] }) {
           <tbody className='divide-y divide-gray-200'>
             {items.map((item) => (
               <tr key={item.id} className='hover:bg-gray-50'>
-                <td className='px-4 py-4 text-sm text-gray-900'>
-                  {item.productName}
+                <td className='flex px-4 py-4 text-sm text-gray-900 items-center gap-2'>
+                  <img src={item.imageUrl} alt='' className='w-8' />
+                  <div className='flex flex-col'>
+                    <div className="text-[15px]">
+                    {item.productName}
+                    </div>
+                    <div className="text-gray-500 text-[13px]">
+                      Màu sắc: {item.color}
+                    </div>
+                    </div>
                 </td>
                 <td className='px-4 py-4 text-sm text-gray-700'>
                   {item.price.toLocaleString('vi-VN', {
@@ -38,7 +46,7 @@ export default function OrderItemSection({ items = [] }) {
                   {item.quantity}
                 </td>
                 <td className='px-4 py-4 text-sm text-gray-900 font-semibold'>
-                  {item.subtotal.toLocaleString('vi-VN', {
+                  {item.subTotal.toLocaleString('vi-VN', {
                     style: 'currency',
                     currency: 'VND',
                   })}

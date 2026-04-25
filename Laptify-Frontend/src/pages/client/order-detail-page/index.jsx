@@ -1,16 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button.jsx';
-import { ArrowLeft, ChevronLeft } from 'lucide-react';
-import CustomInput from '@/components/custom/CustomInput.jsx';
-import CustomSelect from '@/components/custom/CustomSelect.jsx';
-import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
-import OrderItemSection from '@/pages/common/order-management/OrderItemSection.jsx';
-import { getOrderById } from '@/services/orderApi.js';
-import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/axiosClient.js';
+import { getOrderByTrackingCode } from '@/services/orderApi.js';
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
-// Mock data for orders with detailed information
+
 
 const orderStatuses = [
   'Đơn hàng mới',
@@ -18,31 +12,29 @@ const orderStatuses = [
   'Đang vận chuyển',
   'Đã giao',
 ];
-
-export default function OrderDetailPage() {
-  const { id } = useParams();
+const OrderDetailClientPage = () => {
+  const { trackingCode } = useParams();
   const navigate = useNavigate();
-  const [order, setOrder] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [order, setOrder] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Find the order by id
   useEffect(() => {
     const fetchOrder = async () => {
-      if(id){
-        try{
-          const res = (await getOrderById(id)).data
-          setOrder(res)
-        }catch(e){
-          const message = getErrorMessage(e, "Lấy đơn hàng thất bại")
-          toast.error(message)
-        }
-        finally{
-          setIsLoading(false)
+      if (trackingCode) {
+        try {
+          const res = (await getOrderByTrackingCode(trackingCode)).data;
+          setOrder(res);
+        } catch (e) {
+          const message = getErrorMessage(e, 'Lấy đơn hàng thất bại');
+          toast.error(message);
+        } finally {
+          setIsLoading(false);
         }
       }
-    }
+    };
     fetchOrder();
-  }, [id])
+  }, [trackingCode]);
 
   if (!order) {
     return (
@@ -86,20 +78,20 @@ export default function OrderDetailPage() {
     navigate(-1);
   };
 
-  const handleSave = () => {
-    // TODO: Call API to update order
-    console.log('Saving order:', formData);
-    alert('Cập nhật đơn hàng thành công');
-  };
+//   const handleSave = () => {
+//     // TODO: Call API to update order
+//     console.log('Saving order:', formData);
+//     alert('Cập nhật đơn hàng thành công');
+//   };
 
-  const handleDelete = () => {
-    if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
-      // TODO: Call API to delete order
-      console.log('Deleting order:', id);
-      alert('Xóa đơn hàng thành công');
-      navigate(-1);
-    }
-  };
+//   const handleDelete = () => {
+//     if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
+//       // TODO: Call API to delete order
+//       console.log('Deleting order:', id);
+//       alert('Xóa đơn hàng thành công');
+//       navigate(-1);
+//     }
+//   };
 
   return (
     <div className='mx-auto'>
@@ -222,22 +214,8 @@ export default function OrderDetailPage() {
         total={order.totalDue}
         showShipping={true}
       />
-
-      {/* Button Group */}
-      <div className=' flex justify-end gap-4'>
-        <Button
-          onClick={handleDelete}
-          className='px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium'
-        >
-          Xóa đơn hàng
-        </Button>
-        <Button
-          onClick={handleSave}
-          className='px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-medium'
-        >
-          Cập nhật thông tin
-        </Button>
-      </div>
     </div>
   );
 }
+
+export default OrderDetailClientPage;

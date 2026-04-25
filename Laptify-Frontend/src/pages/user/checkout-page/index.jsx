@@ -80,24 +80,39 @@ const CheckoutPage = () => {
           isSaved: formData.isSaved || false,
         },
         products: cartItems.map((item) => ({
-          productId: item.id,
-          skuCode: item.variant,
+          productId: item.productId,
+          skuCode: item.skuCode,
           quantity: item.quantity,
         })),
       };
 
-      const formDataRequest = new FormData();
-      formDataRequest.append(
-        'orderCreationRequest',
-        JSON.stringify(orderCreationRequest)
-      );
-
       console.log('Placing order:', orderCreationRequest);
 
-      await createOrder(formDataRequest);
-      dispatch(clearCheckout());
-      navigate('/order-success');
+      const res = (await createOrder(orderCreationRequest)).data;
 
+      const {
+        orderDetails,
+        totalDue,
+        totalPrice,
+        shippingFee,
+        customer,
+        trackingCode,
+      } = res;
+      localStorage.setItem("latest_order_tracking_code", trackingCode)
+      dispatch(clearCheckout());
+      navigate('/order-success', {
+        state: {
+          orderData: {
+            items: orderDetails,
+            total: totalDue,
+            subtotal: totalPrice,
+            shipping: shippingFee,
+            customerInfo: customer,
+            orderNumber:
+              '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+          },
+        },
+      });
     } catch (error) {
       toast.error(error, 'Đặt hàng thất bại. Vui lòng thử lại.');
     } finally {

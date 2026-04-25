@@ -76,9 +76,11 @@ const ProductDetailPage = () => {
       color: currentSelectVariant.color,
       price: currentSelectVariant.price,
       quantity: quantity,
-      subtotal: currentSelectVariant.price * quantity,
+      subTotal: currentSelectVariant.price * quantity,
       image: currentSelectVariant.mediaMetadataList[0]?.url || '',
     };
+
+    console.log(checkoutItem);
 
     dispatch(setItems([checkoutItem]));
     navigate('/checkout');

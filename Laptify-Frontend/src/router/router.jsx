@@ -21,6 +21,8 @@ import AboutPage from "@/pages/client/about/AboutPage.jsx";
 import ProfilePage from "@/pages/user/profile/index.jsx";
 import DemoLoginPage from "@/pages/client/demo-auth.jsx";
 import NotFoundPage from "@/pages/client/NotFoundPage.jsx";
+import OrderSuccessPage from "@/pages/common/order-management/OrderSuccessPage.jsx";
+import OrderDetailClientPage from "@/pages/client/order-detail-page/index.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +61,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
+
       {
         path: "categories",
         element: <Outlet />,
@@ -87,6 +90,10 @@ export const router = createBrowserRouter([
         element: <CheckoutPage />,
       },
       {
+          path: 'order-success',
+          element: <OrderSuccessPage/>
+      },
+      {
         path: "register",
         element: <RegisterPage />,
       },
@@ -113,6 +120,11 @@ export const router = createBrowserRouter([
       {
         path: "demo-auth",
         element: <DemoLoginPage />,
+      },
+
+      {
+        path: "track-order/:trackingCode",
+        element: <OrderDetailClientPage/>
       },
       {
         path: "*",

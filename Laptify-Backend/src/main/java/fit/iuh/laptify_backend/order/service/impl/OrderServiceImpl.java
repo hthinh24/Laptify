@@ -1,5 +1,6 @@
 package fit.iuh.laptify_backend.order.service.impl;
 
+import fit.iuh.laptify_backend.advice.exception.UnauthorizedException;
 import fit.iuh.laptify_backend.auth.entity.User;
 import fit.iuh.laptify_backend.auth.service.AuthService;
 import fit.iuh.laptify_backend.advice.exception.BadRequestException;
@@ -41,11 +42,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderResponse getOrderById(Long orderId) {
+        Order order =  orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        return mapEntityToResponse(order);
+    }
+
+    @Override
     @Transactional
     public OrderResponse createOrder(OrderCreationRequest request) {
         UserPlacementInfo customerInfo = buildCustomerPlacement(request.getCustomer());
 
-        Order order = new Order(customerInfo);
+        Long newOrderId = System.currentTimeMillis();
+        Order order = new Order(newOrderId, customerInfo);
 
         List<OrderDetail> orderDetails = buildOrderDetails(request.getProducts(), order);
 
@@ -71,10 +81,16 @@ public class OrderServiceImpl implements OrderService {
                 customer.getAddress(),
                 customer.isSaved()
         );
-        User user = authService.getCurrentUser();
-
-        if(user != null){
+//        User user = authService.getCurrentUser();
+//
+//        if(user != null){
+//            customerInfo.setUser(user);
+//        }
+        try {
+            User user = authService.getCurrentUser();
             customerInfo.setUser(user);
+        }catch (UnauthorizedException ignored){
+
         }
         return customerInfo;
     }
@@ -130,11 +146,15 @@ public class OrderServiceImpl implements OrderService {
             order.getUserInfoPlacement().getAddress()
         );
 
-        List<OrderResponse.OrderDetailInfo> orderDetails = order.getOrderDetails().stream().map(detail -> new OrderResponse.OrderDetailInfo(
+        List<OrderResponse.OrderDetailInfo> orderDetails = order.getOrderDetails().stream().map(detail ->
+                new OrderResponse.OrderDetailInfo(
+                detail.getId(),
                 detail.getSku().getProduct().getName(),
                 detail.getSku().getColor(),
                 detail.getQuantity(),
-                detail.getPriceAtPurchase()
+                detail.getPriceAtPurchase(),
+                detail.getSubTotal(),
+                detail.getSku().getMediaMetadata().getFirst().getUrl()
         )).toList();
 
         return new OrderResponse(
@@ -142,6 +162,7 @@ public class OrderServiceImpl implements OrderService {
                 order.getOrderDate(),
                 order.getTotalPrice(),
                 order.getShippingFee(),
+                order.getTotalDue(),
                 order.getStatus().name(),
                 order.getTrackingCode(),
                 customerInfo,

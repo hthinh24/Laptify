@@ -16,6 +16,7 @@ public class OrderResponse {
     private Instant orderDate;
     private BigDecimal totalPrice;
     private BigDecimal shippingFee;
+    private BigDecimal totalDue;
     private String status;
     private String trackingCode;
     private CustomerInfo customer;
@@ -35,9 +36,12 @@ public class OrderResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderDetailInfo{
+        private Long id;
         private String productName;
         private String color;
         private int quantity;
-        private BigDecimal productPrice;
+        private BigDecimal price;
+        private BigDecimal subTotal;
+        private String imageUrl;
     }
 }
