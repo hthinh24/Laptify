@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { authService } from "@/services/auth/authService.js";
-import { loginSuccess, loginFailure } from "@/feature/auth/authSlice.js";
+import { loginSuccess } from "@/feature/auth/authSlice.js";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import signUpImage from "@/assets/thumbnail.png";
 
@@ -19,13 +19,15 @@ const LoginPage = () => {
   const [notification, setNotification] = useState(null);
 
   // Validate password strength
+
   const validatePassword = (password) => {
     const rules = {
       minLength: password.length >= 8,
       hasUpperCase: /[A-Z]/.test(password),
       hasLowerCase: /[a-z]/.test(password),
       hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      // Đã loại bỏ các dấu gạch chéo ngược không cần thiết
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
     };
 
     return {
@@ -82,22 +84,24 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
+    setNotification(null); // Clear thông báo cũ trước khi gửi request mới
+
     try {
-      await authService.login({
+      const response = await authService.login({
         email: formData.email,
         password: formData.password,
       });
 
-      // Dispatch login success to Redux with user data
-      dispatch(loginSuccess({
-        email: formData.email,
-        name: formData.email.split('@')[0] // Use email prefix as name for demo
-      }));
+      // Thành công
+      dispatch(
+        loginSuccess({
+          user: response.user,
+          accessToken: response.accessToken,
+        }),
+      );
 
       setNotification({
         type: "success",
@@ -106,13 +110,16 @@ const LoginPage = () => {
 
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      }, 1500);
     } catch (error) {
-      dispatch(loginFailure(error.message || "Đăng nhập thất bại"));
+      // Lấy đúng message "Email hoặc mật khẩu không chính xác" từ Backend
       setNotification({
         type: "error",
-        message: error.message || "Đăng nhập thất bại. Vui lòng thử lại.",
+        message: error.message,
       });
+
+      // Xóa bớt mật khẩu đã nhập để người dùng nhập lại từ đầu (tăng tính an toàn)
+      setFormData((prev) => ({ ...prev, password: "" }));
     } finally {
       setLoading(false);
     }
@@ -155,9 +162,9 @@ const LoginPage = () => {
                 }`}
               >
                 {notification.type === "success" ? (
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
                 ) : (
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  <AlertCircle className="h-5 w-5 text-red-600 shrink-0" />
                 )}
                 <p
                   className={

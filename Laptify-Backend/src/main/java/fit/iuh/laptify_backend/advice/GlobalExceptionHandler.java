@@ -6,6 +6,8 @@ import fit.iuh.laptify_backend.product.dto.common.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -33,6 +35,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Void>builder()
                         .message(e.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, InternalAuthenticationServiceException.class})
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.<Void>builder()
+                        .message("Email hoặc mật khẩu không chính xác")
                         .build());
     }
 }

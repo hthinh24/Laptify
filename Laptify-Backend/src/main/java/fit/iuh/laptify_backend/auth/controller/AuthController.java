@@ -37,4 +37,9 @@ public class AuthController {
                 .header("Set-Cookie", authResult.getRefreshToken().toString())
                 .body(authResult.getAuthResponse());
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok("Logout successful");
+    }
 }
