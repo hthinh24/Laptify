@@ -23,6 +23,7 @@ import DemoLoginPage from "@/pages/client/demo-auth.jsx";
 import NotFoundPage from "@/pages/client/NotFoundPage.jsx";
 import OrderSuccessPage from "@/pages/common/order-management/OrderSuccessPage.jsx";
 import OrderDetailClientPage from "@/pages/client/order-detail-page/index.jsx";
+import ProtectedRoute from "@/router/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -78,16 +79,28 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path: "wish-list",
-        element: <UserWishlistPage />,
+        path: "wishlist",
+        element: (
+          <ProtectedRoute>
+            <UserWishlistPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "cart",
-        element: <CartPage />,
+        element: (
+          <ProtectedRoute>
+            <CartPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "checkout",
-        element: <CheckoutPage />,
+        element: (
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        ),
       },
       {
           path: 'order-success',
@@ -115,7 +128,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <ProfilePage />,
+        element: (
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "demo-auth",
@@ -134,7 +151,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminPage />,
+    element: (
+      <ProtectedRoute allowedRoles={["ADMIN"]}>
+        <AdminPage />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "products",

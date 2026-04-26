@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authService } from "@/services/auth/authService.js";
-import { loginSuccess, loginFailure } from "@/feature/auth/authSlice.js";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { loginSuccess } from "@/feature/auth/authSlice.js";
+import { AlertCircle, CheckCircle, Lock } from "lucide-react";
 import signUpImage from "@/assets/thumbnail.png";
 
 const LoginPage = () => {
@@ -17,15 +17,59 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const timer = setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (isAuthenticated && !isRedirecting) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-lg">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <Lock className="h-8 w-8 text-red-600" />
+          </div>
+          <h2 className="mb-2 text-2xl font-bold text-foreground">
+            Bạn đã đăng nhập
+          </h2>
+          <p className="mb-6 text-muted-foreground">
+            Hệ thống ghi nhận bạn đang trong phiên làm việc. Vui lòng đăng xuất
+            nếu bạn muốn chuyển đổi tài khoản.
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => navigate("/", { replace: true })}
+              className="w-full rounded-md bg-red-500 py-2.5 font-semibold text-white transition-colors hover:bg-red-600"
+            >
+              Về trang chủ ngay
+            </button>
+            <p className="text-xs text-muted-foreground italic">
+              Tự động quay lại trang chủ sau vài giây...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Validate password strength
+
   const validatePassword = (password) => {
     const rules = {
       minLength: password.length >= 8,
       hasUpperCase: /[A-Z]/.test(password),
       hasLowerCase: /[a-z]/.test(password),
       hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      // Đã loại bỏ các dấu gạch chéo ngược không cần thiết
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
     };
 
     return {
@@ -82,22 +126,26 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
+    setNotification(null); // Clear thông báo cũ trước khi gửi request mới
+
     try {
-      await authService.login({
+      const response = await authService.login({
         email: formData.email,
         password: formData.password,
       });
 
-      // Dispatch login success to Redux with user data
-      dispatch(loginSuccess({
-        email: formData.email,
-        name: formData.email.split('@')[0] // Use email prefix as name for demo
-      }));
+      setIsRedirecting(true);
+
+      // Thành công
+      dispatch(
+        loginSuccess({
+          user: response.user,
+          accessToken: response.accessToken,
+        }),
+      );
 
       setNotification({
         type: "success",
@@ -106,13 +154,16 @@ const LoginPage = () => {
 
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      }, 1500);
     } catch (error) {
-      dispatch(loginFailure(error.message || "Đăng nhập thất bại"));
+      // Lấy đúng message "Email hoặc mật khẩu không chính xác" từ Backend
       setNotification({
         type: "error",
-        message: error.message || "Đăng nhập thất bại. Vui lòng thử lại.",
+        message: error.message,
       });
+
+      // Xóa bớt mật khẩu đã nhập để người dùng nhập lại từ đầu (tăng tính an toàn)
+      setFormData((prev) => ({ ...prev, password: "" }));
     } finally {
       setLoading(false);
     }
@@ -155,9 +206,9 @@ const LoginPage = () => {
                 }`}
               >
                 {notification.type === "success" ? (
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
                 ) : (
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  <AlertCircle className="h-5 w-5 text-red-600 shrink-0" />
                 )}
                 <p
                   className={

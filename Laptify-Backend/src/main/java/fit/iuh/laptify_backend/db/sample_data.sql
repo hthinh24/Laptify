@@ -184,4 +184,3 @@ VALUES ('GP001-BLK', 'Black', JSON_ARRAY(JSON_OBJECT('url', '/images/gp001-blk.j
        ('GP005-BLK', 'Black', JSON_ARRAY(JSON_OBJECT('url', '/images/gp005-blk.jpg', 'publicId', 'gp005-blk')), 3576000, 18, 25, 68),
        ('GP005-SLV', 'Silver', JSON_ARRAY(JSON_OBJECT('url', '/images/gp005-slv.jpg', 'publicId', 'gp005-slv')), 3576000, 16, 25, 54),
        ('GP005-GLD', 'Gold', JSON_ARRAY(JSON_OBJECT('url', '/images/gp005-gld.jpg', 'publicId', 'gp005-gld')), 3576000, 14, 25, 43);
-

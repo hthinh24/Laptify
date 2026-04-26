@@ -1,20 +1,62 @@
-import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authService } from "@/services/auth/authService.js";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { registerThunk } from "@/feature/auth/authThunk";
+import { AlertCircle, CheckCircle, Lock } from "lucide-react";
 import signUpImage from "@/assets/thumbnail.png";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { isAuthenticated, loading } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
   });
-
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const timer = setTimeout(() => {
+        navigate("/");
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-lg">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <Lock className="h-8 w-8 text-red-600" />
+          </div>
+          <h2 className="mb-2 text-2xl font-bold text-foreground">
+            Truy cập bị chặn
+          </h2>
+          <p className="mb-6 text-muted-foreground">
+            Bạn đã đăng nhập vào hệ thống Laptify. Vui lòng đăng xuất trước khi
+            muốn tạo tài khoản mới hoặc đăng nhập bằng tài khoản khác.
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => navigate("/")}
+              className="w-full rounded-md bg-red-500 py-2.5 font-semibold text-white transition-colors hover:bg-red-600"
+            >
+              Quay lại trang chủ
+            </button>
+            <p className="text-xs text-muted-foreground italic">
+              Tự động chuyển hướng sau vài giây...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Validate password strength
   const validatePassword = (password) => {
@@ -23,7 +65,7 @@ const RegisterPage = () => {
       hasUpperCase: /[A-Z]/.test(password),
       hasLowerCase: /[a-z]/.test(password),
       hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
     };
 
     return {
@@ -74,7 +116,6 @@ const RegisterPage = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -90,29 +131,27 @@ const RegisterPage = () => {
       return;
     }
 
-    setLoading(true);
-    try {
-      await authService.register({
+    const resultAction = await dispatch(
+      registerThunk({
         name: formData.fullName,
         email: formData.email,
         password: formData.password,
-      });
+      }),
+    );
 
+    if (registerThunk.fulfilled.match(resultAction)) {
       setNotification({
         type: "success",
         message: "Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...",
       });
-
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } catch (error) {
+    } else {
       setNotification({
         type: "error",
-        message: error.message || "Đăng ký thất bại. Vui lòng thử lại.",
+        message: resultAction.payload || "Đăng ký thất bại. Vui lòng thử lại.",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -153,9 +192,9 @@ const RegisterPage = () => {
                 }`}
               >
                 {notification.type === "success" ? (
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
                 ) : (
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  <AlertCircle className="h-5 w-5 text-red-600 shrink-0" />
                 )}
                 <p
                   className={
