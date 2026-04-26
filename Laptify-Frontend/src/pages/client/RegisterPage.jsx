@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { authService } from "@/services/auth/authService.js";
+import { registerThunk } from "@/feature/auth/authThunk";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import signUpImage from "@/assets/thumbnail.png";
+import { useDispatch, useSelector } from "react-redux";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { loading } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
   });
-
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
 
   // Validate password strength
@@ -23,7 +26,7 @@ const RegisterPage = () => {
       hasUpperCase: /[A-Z]/.test(password),
       hasLowerCase: /[a-z]/.test(password),
       hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      hasSpecialChar: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password),
     };
 
     return {
@@ -74,7 +77,6 @@ const RegisterPage = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -90,29 +92,27 @@ const RegisterPage = () => {
       return;
     }
 
-    setLoading(true);
-    try {
-      await authService.register({
+    const resultAction = await dispatch(
+      registerThunk({
         name: formData.fullName,
         email: formData.email,
         password: formData.password,
-      });
+      }),
+    );
 
+    if (registerThunk.fulfilled.match(resultAction)) {
       setNotification({
         type: "success",
         message: "Đăng ký thành công! Đang chuyển hướng đến trang đăng nhập...",
       });
-
       setTimeout(() => {
         navigate("/login");
       }, 2000);
-    } catch (error) {
+    } else {
       setNotification({
         type: "error",
-        message: error.message || "Đăng ký thất bại. Vui lòng thử lại.",
+        message: resultAction.payload || "Đăng ký thất bại. Vui lòng thử lại.",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -153,9 +153,9 @@ const RegisterPage = () => {
                 }`}
               >
                 {notification.type === "success" ? (
-                  <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
                 ) : (
-                  <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  <AlertCircle className="h-5 w-5 text-red-600 shrink-0" />
                 )}
                 <p
                   className={
