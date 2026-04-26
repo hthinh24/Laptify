@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authService } from "@/services/auth/authService.js";
 import { loginSuccess } from "@/feature/auth/authSlice.js";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, Lock } from "lucide-react";
 import signUpImage from "@/assets/thumbnail.png";
 
 const LoginPage = () => {
@@ -17,6 +17,48 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const timer = setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (isAuthenticated && !isRedirecting) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-lg">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <Lock className="h-8 w-8 text-red-600" />
+          </div>
+          <h2 className="mb-2 text-2xl font-bold text-foreground">
+            Bạn đã đăng nhập
+          </h2>
+          <p className="mb-6 text-muted-foreground">
+            Hệ thống ghi nhận bạn đang trong phiên làm việc. Vui lòng đăng xuất
+            nếu bạn muốn chuyển đổi tài khoản.
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => navigate("/", { replace: true })}
+              className="w-full rounded-md bg-red-500 py-2.5 font-semibold text-white transition-colors hover:bg-red-600"
+            >
+              Về trang chủ ngay
+            </button>
+            <p className="text-xs text-muted-foreground italic">
+              Tự động quay lại trang chủ sau vài giây...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Validate password strength
 
@@ -94,6 +136,8 @@ const LoginPage = () => {
         email: formData.email,
         password: formData.password,
       });
+
+      setIsRedirecting(true);
 
       // Thành công
       dispatch(
