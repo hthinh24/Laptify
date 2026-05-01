@@ -16,10 +16,11 @@ const OrderSuccessPage = () => {
   useEffect(() => {
     // Get order data from location state (passed from checkout page)
     if (location.state?.orderData) {
+      console.log(location.state.orderData)
       setOrderData(location.state.orderData);
       setLoading(false);
     } else {
-      // If no order data, redirect to home
+      // If no order data, redirect to home 
       toast.error('[v0] No order data found, redirecting to home');
       navigate('/');
     }
@@ -42,11 +43,17 @@ const OrderSuccessPage = () => {
     total = 0,
     subtotal = 0,
     shipping = 0,
-    orderNumber = '#B6CT3',
+    trackingCode = '#B6CT3',
   } = orderData;
 
   const handleViewDetails = () => {
-    navigate('/order-details', { state: { orderData } });
+    if(isAuthenticated)
+    {
+      navigate('/order-details', { state: { orderData } });
+    }
+    else {
+      navigate(`/track-order/${orderData.trackingCode}`)
+    }
   };
 
   const handleBackHome = () => {
@@ -71,8 +78,8 @@ const OrderSuccessPage = () => {
             việc.
           </p>
           <p className='text-gray-700 font-semibold'>
-            Mã đơn hàng của bạn:{' '}
-            <span className='text-red-600'>{orderNumber}</span>
+            Mã kiểm tra đơn hàng của bạn:{' '}
+            <span className='text-red-600'>{trackingCode}</span>
           </p>
         </div>
 
@@ -83,7 +90,7 @@ const OrderSuccessPage = () => {
           </h2>
 
           {/* Order Items */}
-          <OrderItemSection items={items}/>
+          <OrderItemSection items={items} />
 
           {/* Pricing */}
           <PricingSection

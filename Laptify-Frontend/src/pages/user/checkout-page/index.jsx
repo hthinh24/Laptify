@@ -58,7 +58,7 @@ const CheckoutPage = () => {
   };
 
   // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + item.subTotal, 0);
   const shipping = 0; // Free shipping
   const total = subtotal + shipping;
 
@@ -108,8 +108,7 @@ const CheckoutPage = () => {
             subtotal: totalPrice,
             shipping: shippingFee,
             customerInfo: customer,
-            orderNumber:
-              '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+            trackingCode: trackingCode
           },
         },
       });

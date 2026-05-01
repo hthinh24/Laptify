@@ -5,12 +5,15 @@ import fit.iuh.laptify_backend.auth.entity.User;
 import fit.iuh.laptify_backend.auth.service.AuthService;
 import fit.iuh.laptify_backend.advice.exception.BadRequestException;
 import fit.iuh.laptify_backend.order.dto.request.OrderCreationRequest;
+import fit.iuh.laptify_backend.order.dto.response.OrderDisplayResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderResponse;
 import fit.iuh.laptify_backend.order.entity.Order;
 import fit.iuh.laptify_backend.order.entity.OrderDetail;
 import fit.iuh.laptify_backend.order.entity.UserPlacementInfo;
 import fit.iuh.laptify_backend.order.repository.OrderRepository;
 import fit.iuh.laptify_backend.order.service.OrderService;
+import fit.iuh.laptify_backend.product.dto.common.PageRequest;
+import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.entity.Sku;
 import fit.iuh.laptify_backend.product.repository.SkuRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,6 +50,11 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("Order not found"));
 
         return mapEntityToResponse(order);
+    }
+
+    @Override
+    public PageResponse<List<OrderDisplayResponse>> getOrders(PageRequest page) {
+        return null;
     }
 
     @Override

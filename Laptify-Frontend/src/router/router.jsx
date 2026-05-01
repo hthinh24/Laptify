@@ -27,7 +27,7 @@ import ProtectedRoute from "@/router/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <RootPage />,
     children: [
       {
@@ -35,44 +35,44 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "products",
+        path: 'products',
         element: <Outlet />,
         children: [
           {
             index: true,
-            element: <ProductPage type={"all"} title={"Tất cả sản phẩm"} />,
+            element: <ProductPage type={'all'} title={'Tất cả sản phẩm'} />,
           },
           {
-            path: "best-sellers",
+            path: 'best-sellers',
             element: (
-              <ProductPage type={"best-sellers"} title={"Bán chạy nhất"} />
+              <ProductPage type={'best-sellers'} title={'Bán chạy nhất'} />
             ),
           },
           {
-            path: "news",
-            element: <ProductPage type={"news"} title={"Sản phẩm mới"} />,
+            path: 'news',
+            element: <ProductPage type={'news'} title={'Sản phẩm mới'} />,
           },
           {
-            path: "search",
+            path: 'search',
             element: <SearchPage />,
           },
           {
-            path: ":productId",
+            path: ':productId',
             element: <ProductDetailPage />,
           },
         ],
       },
 
       {
-        path: "categories",
+        path: 'categories',
         element: <Outlet />,
         children: [
           {
-            path: ":category/products",
+            path: ':category/products',
             element: (
               <ProductPage
-                type={"product-by-category"}
-                title={"Sản phẩm theo danh mục"}
+                type={'product-by-category'}
+                title={'Sản phẩm theo danh mục'}
               />
             ),
           },
@@ -103,27 +103,27 @@ export const router = createBrowserRouter([
         ),
       },
       {
-          path: 'order-success',
-          element: <OrderSuccessPage/>
+        path: 'order-success',
+        element: <OrderSuccessPage />,
       },
       {
-        path: "register",
+        path: 'register',
         element: <RegisterPage />,
       },
       {
-        path: "login",
+        path: 'login',
         element: <LoginPage />,
       },
       {
-        path: "forgot-password",
+        path: 'forgot-password',
         element: <ForgotPasswordPage />,
       },
       {
-        path: "contact",
+        path: 'contact',
         element: <ContactPage />,
       },
       {
-        path: "about",
+        path: 'about',
         element: <AboutPage />,
       },
       {
@@ -135,16 +135,16 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "demo-auth",
+        path: 'demo-auth',
         element: <DemoLoginPage />,
       },
 
       {
-        path: "track-order/:trackingCode",
-        element: <OrderDetailClientPage/>
+        path: 'track-order/:trackingCode',
+        element: <OrderDetailClientPage />,
       },
       {
-        path: "*",
+        path: '*',
         element: <NotFoundPage />,
       },
     ],
@@ -158,23 +158,23 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "products",
+        path: 'products',
         element: <ProductManagementPage />,
       },
       {
-        path: "product-addition",
+        path: 'product-addition',
         element: <ProductAdditionPage />,
       },
       {
-        path: "product-updating/:id",
+        path: 'product-updating/:id',
         element: <ProductUpdatingPage />,
       },
       {
-        path: "orders",
+        path: 'orders',
         element: <OrderManagementPage />,
       },
       {
-        path: "order-detail/:id",
+        path: 'order-detail/:id',
         element: <OrderDetailPage />,
       },
     ],

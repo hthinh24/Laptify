@@ -1,5 +1,10 @@
+import CustomInput from '@/components/custom/CustomInput.jsx';
+import { Button } from '@/components/ui/button.jsx';
 import { getErrorMessage } from '@/lib/axiosClient.js';
+import OrderItemSection from '@/pages/common/order-management/OrderItemSection.jsx';
+import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
 import { getOrderByTrackingCode } from '@/services/orderApi.js';
+import { ChevronLeft } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -17,14 +22,29 @@ const OrderDetailClientPage = () => {
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    id:"",
+    customerName: "",
+    phone: "",
+    address: "",
+    orderDate: "",
+    status:"",
+  });
 
-  // Find the order by id
   useEffect(() => {
     const fetchOrder = async () => {
       if (trackingCode) {
         try {
           const res = (await getOrderByTrackingCode(trackingCode)).data;
           setOrder(res);
+          setFormData({
+            id: res?.id,
+            customerName: res?.customer?.customerName,
+            phone: res?.customer?.phoneNumber,
+            address: res?.customer?.address,
+            orderDate: res?.orderDate,
+            status: res?.status,
+          });
         } catch (e) {
           const message = getErrorMessage(e, 'Lấy đơn hàng thất bại');
           toast.error(message);
@@ -35,6 +55,8 @@ const OrderDetailClientPage = () => {
     };
     fetchOrder();
   }, [trackingCode]);
+
+
 
   if (!order) {
     return (
@@ -50,29 +72,20 @@ const OrderDetailClientPage = () => {
     );
   }
 
-  const [formData, setFormData] = useState({
-    id: order.id,
-    customerName: order.customer?.customerName,
-    phone: order.customer?.phoneNumber,
-    address: order.customer?.address,
-    orderDate: order.orderDate,
-    status: order.status,
-  });
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleStatusChange = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      status: value,
-    }));
-  };
+  // const handleStatusChange = (value) => {
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     status: value,
+  //   }));
+  // };
 
   const handleCancel = () => {
     navigate(-1);
@@ -115,91 +128,44 @@ const OrderDetailClientPage = () => {
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-6'>
           {/* Column 1 */}
           <div className='space-y-4'>
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Mã đơn hàng
-              </label>
-              <input
-                type='text'
-                name='orderId'
-                value={formData.id}
-                disabled
-                className='w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed'
-              />
-            </div>
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Tên khách hàng
-              </label>
-              <input
-                type='text'
-                name='customerName'
-                value={formData.customerName}
-                onChange={handleInputChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-900 cursor-text`}
-              />
-            </div>
+            <CustomInput
+              label='Mã đơn hàng'
+              value={formData.id}
+              disabled={true}
+            />
+            <CustomInput
+              label='Tên khách hàng'
+              value={formData.customerName}
+              disabled={true}
+            />
           </div>
 
           {/* Column 2 */}
           <div className='space-y-4'>
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Số điện thoại
-              </label>
-              <input
-                type='text'
-                name='phone'
-                value={formData.phone}
-                onChange={handleInputChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-900 cursor-text`}
-              />
-            </div>
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Địa chỉ giao hàng
-              </label>
-              <input
-                type='text'
-                name='address'
-                value={formData.address}
-                onChange={handleInputChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-900 cursor-text`}
-              />
-            </div>
+            <CustomInput
+              label='Số điện thoại'
+              value={formData.phoneNumber}
+              disabled={true}
+            />
+            <CustomInput
+              label='Địa chỉ giao hàng'
+              value={formData.address}
+              disabled={true}
+            />
           </div>
 
           {/* Column 3 */}
           <div className='space-y-4'>
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Ngày đặt hàng
-              </label>
-              <input
-                type='text'
-                name='orderDate'
-                value={formData.orderDate}
-                disabled
-                className='w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed'
-              />
-            </div>
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Tình trạng
-              </label>
-              <select
-                name='status'
-                value={formData.status}
-                onChange={(e) => handleStatusChange(e.target.value)}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-900 cursor-pointer`}
-              >
-                {orderStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomInput
+              label='Ngày đặt hàng'
+              value={formData.orderDate}
+              disabled={true}
+            />
+            <CustomInput
+              label='Tình trạng đơn hàng'
+              value={formData.status}
+              disabled={true}
+            />
           </div>
         </div>
       </div>
