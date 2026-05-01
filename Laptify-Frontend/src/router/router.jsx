@@ -24,6 +24,7 @@ import NotFoundPage from "@/pages/client/NotFoundPage.jsx";
 import OrderSuccessPage from "@/pages/common/order-management/OrderSuccessPage.jsx";
 import OrderDetailClientPage from "@/pages/client/order-detail-page/index.jsx";
 import ProtectedRoute from "@/router/ProtectedRoute";
+import OrderDetailUserPage from "@/pages/user/order-detail-page/index.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -62,7 +63,16 @@ export const router = createBrowserRouter([
           },
         ],
       },
-
+      {
+        path: 'orders',
+        element: <Outlet />,
+        children: [
+          {
+            path: ':id',
+            element: <OrderDetailUserPage />,
+          },
+        ],
+      },
       {
         path: 'categories',
         element: <Outlet />,
@@ -79,7 +89,7 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path: "wishlist",
+        path: 'wishlist',
         element: (
           <ProtectedRoute>
             <UserWishlistPage />
@@ -87,7 +97,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "cart",
+        path: 'cart',
         element: (
           <ProtectedRoute>
             <CartPage />
@@ -95,11 +105,11 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "checkout",
+        path: 'checkout',
         element: (
-          <ProtectedRoute>
-            <CheckoutPage />
-          </ProtectedRoute>
+          // <ProtectedRoute>
+          <CheckoutPage />
+          // </ProtectedRoute>
         ),
       },
       {
@@ -127,7 +137,7 @@ export const router = createBrowserRouter([
         element: <AboutPage />,
       },
       {
-        path: "profile",
+        path: 'profile',
         element: (
           <ProtectedRoute>
             <ProfilePage />
@@ -150,11 +160,11 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admin",
+    path: '/admin',
     element: (
-      <ProtectedRoute allowedRoles={["ADMIN"]}>
-        <AdminPage />
-      </ProtectedRoute>
+      // <ProtectedRoute allowedRoles={["ADMIN"]}>
+      <AdminPage />
+      // </ProtectedRoute>
     ),
     children: [
       {

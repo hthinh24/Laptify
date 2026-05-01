@@ -3,39 +3,31 @@ import { Button } from '@/components/ui/button.jsx';
 import { getErrorMessage } from '@/lib/axiosClient.js';
 import OrderItemSection from '@/pages/common/order-management/OrderItemSection.jsx';
 import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
-import { getOrderByTrackingCode } from '@/services/orderApi.js';
-import { ChevronLeft } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
+import { getOrderById } from '@/services/orderApi.js';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 
-
-const orderStatuses = [
-  'Đơn hàng mới',
-  'Đang đóng gói',
-  'Đang vận chuyển',
-  'Đã giao',
-];
-const OrderDetailClientPage = () => {
-  const { trackingCode } = useParams();
+const OrderDetailUserPage = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    id:"",
-    customerName: "",
-    phone: "",
-    address: "",
-    orderDate: "",
-    status:"",
+    id: '',
+    customerName: '',
+    phone: '',
+    address: '',
+    orderDate: '',
+    status: '',
   });
 
   useEffect(() => {
     const fetchOrder = async () => {
-      if (trackingCode) {
+      if (id) {
         try {
-          const res = (await getOrderByTrackingCode(trackingCode)).data;
+          const res = (await getOrderById(id)).data;
           setOrder(res);
           setFormData({
             id: res?.id,
@@ -54,36 +46,35 @@ const OrderDetailClientPage = () => {
       }
     };
     fetchOrder();
-  }, [trackingCode]);
+  }, [id]);
 
+  if (isLoading) {
+    return (
+      <div className='text-center py-8'>
+        <p className='text-gray-500'>Đang tìm kiếm đơn hàng</p>
+        <Button
+          onClick={() => navigate(-1)}
+          className='mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700'
+        >
+          Quay lại
+        </Button>
+      </div>
+    );
+  }
 
-    if (isLoading) {
-      return (
-        <div className='text-center py-8'>
-          <p className='text-gray-500'>Đang tìm kiếm đơn hàng</p>
-          <Button
-            onClick={() => navigate(-1)}
-            className='mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700'
-          >
-            Quay lại
-          </Button>
-        </div>
-      );
-    }
-
-    if (!order) {
-      return (
-        <div className='text-center py-8'>
-          <p className='text-gray-500'>Không tìm thấy đơn hàng</p>
-          <Button
-            onClick={() => navigate(-1)}
-            className='mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700'
-          >
-            Quay lại
-          </Button>
-        </div>
-      );
-    }
+  if (!order) {
+    return (
+      <div className='text-center py-8'>
+        <p className='text-gray-500'>Không tìm thấy đơn hàng</p>
+        <Button
+          onClick={() => navigate(-1)}
+          className='mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700'
+        >
+          Quay lại
+        </Button>
+      </div>
+    );
+  }
 
   // const handleInputChange = (e) => {
   //   const { name, value } = e.target;
@@ -100,28 +91,28 @@ const OrderDetailClientPage = () => {
   //   }));
   // };
 
-//   const handleSave = () => {
-//     // TODO: Call API to update order
-//     console.log('Saving order:', formData);
-//     alert('Cập nhật đơn hàng thành công');
-//   };
+  //   const handleSave = () => {
+  //     // TODO: Call API to update order
+  //     console.log('Saving order:', formData);
+  //     alert('Cập nhật đơn hàng thành công');
+  //   };
 
-//   const handleDelete = () => {
-//     if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
-//       // TODO: Call API to delete order
-//       console.log('Deleting order:', id);
-//       alert('Xóa đơn hàng thành công');
-//       navigate(-1);
-//     }
-//   };
+  //   const handleDelete = () => {
+  //     if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
+  //       // TODO: Call API to delete order
+  //       console.log('Deleting order:', id);
+  //       alert('Xóa đơn hàng thành công');
+  //       navigate(-1);
+  //     }
+  //   };
 
   return (
     <div className='mx-auto max-w-7xl'>
       {/* Header */}
       <div className='my-6'>
-          <h1 className='text-3xl text-center font-bold text-gray-900'>
-            Chi tiết đơn hàng
-          </h1>
+        <h1 className='text-3xl text-center font-bold text-gray-900'>
+          Chi tiết đơn hàng
+        </h1>
       </div>
 
       {/* Order Information Section */}
@@ -181,14 +172,13 @@ const OrderDetailClientPage = () => {
         total={order.totalDue}
         showShipping={true}
       />
-      <div className="flex justify-center my-6">
+      <div className='flex justify-center my-6'>
         <Button className={'px-6 py-4'}>
           <Link to={'/'}>Back to home</Link>
         </Button>
       </div>
-
     </div>
   );
-}
+};
 
-export default OrderDetailClientPage;
+export default OrderDetailUserPage;

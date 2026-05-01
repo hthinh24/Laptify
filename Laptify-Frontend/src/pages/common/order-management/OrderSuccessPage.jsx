@@ -39,6 +39,7 @@ const OrderSuccessPage = () => {
   }
 
   const {
+    id=1,
     items = [],
     total = 0,
     subtotal = 0,
@@ -49,10 +50,10 @@ const OrderSuccessPage = () => {
   const handleViewDetails = () => {
     if(isAuthenticated)
     {
-      navigate('/order-details', { state: { orderData } });
+      navigate(`/order-details/${orderData.id}`, { replace: true });
     }
     else {
-      navigate(`/track-order/${orderData.trackingCode}`)
+      navigate(`/track-order/${orderData.trackingCode}`, { replace: true });
     }
   };
 

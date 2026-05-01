@@ -91,6 +91,7 @@ const CheckoutPage = () => {
       const res = (await createOrder(orderCreationRequest)).data;
 
       const {
+        id,
         orderDetails,
         totalDue,
         totalPrice,
@@ -103,6 +104,7 @@ const CheckoutPage = () => {
       navigate('/order-success', {
         state: {
           orderData: {
+            id: id,
             items: orderDetails,
             total: totalDue,
             subtotal: totalPrice,

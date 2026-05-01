@@ -9,5 +9,5 @@ export const getOrderById = (id) => {
 };
 
 export const getOrderByTrackingCode = (trackingcode) => {
-  return axiosClient.get(`/v1/orders?tracking_code=${trackingcode}`);
+  return axiosClient.get(`/v1/orders/track-order/${trackingcode}`);
 };

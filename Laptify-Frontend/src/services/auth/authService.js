@@ -3,7 +3,7 @@ import { axiosClient } from "@/lib/axiosClient.js";
 export const authService = {
   register: async (userData) => {
     try {
-      const response = await axiosClient.post("/auth/register", userData);
+      const response = await axiosClient.post("/v1/auth/register", userData);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Đăng ký thất bại");
@@ -12,7 +12,7 @@ export const authService = {
 
   login: async (credentials) => {
     try {
-      const response = await axiosClient.post("/auth/login", credentials);
+      const response = await axiosClient.post("/v1/auth/login", credentials);
 
       // Backend trả về field tên là 'user', không phải 'userSession'
       const { accessToken, user } = response.data;

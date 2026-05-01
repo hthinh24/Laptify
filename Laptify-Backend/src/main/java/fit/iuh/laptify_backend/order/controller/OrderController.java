@@ -20,8 +20,8 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
 
-    @GetMapping
-    public ResponseEntity<OrderResponse> getOrderByTrackingCode(@RequestParam(name = "tracking_code") String trackingCode){
+    @GetMapping("/track-order/{tracking_code}")
+    public ResponseEntity<OrderResponse> getOrderByTrackingCode(@PathVariable(name = "tracking_code") String trackingCode){
         return ResponseEntity.ok(orderService.getOrderByTrackingCode(trackingCode));
     }
 
