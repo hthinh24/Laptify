@@ -2,18 +2,21 @@ package fit.iuh.laptify_backend.order.service.impl;
 
 import fit.iuh.laptify_backend.advice.exception.UnauthorizedException;
 import fit.iuh.laptify_backend.auth.entity.User;
+import fit.iuh.laptify_backend.auth.repository.UserRepository;
 import fit.iuh.laptify_backend.auth.service.AuthService;
 import fit.iuh.laptify_backend.advice.exception.BadRequestException;
 import fit.iuh.laptify_backend.cart.entity.Cart;
 import fit.iuh.laptify_backend.cart.entity.CartDetail;
 import fit.iuh.laptify_backend.cart.repository.CartRepository;
 import fit.iuh.laptify_backend.order.dto.request.OrderCreationRequest;
+import fit.iuh.laptify_backend.order.dto.response.CustomerOrderInfoResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderDisplayResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderResponse;
 import fit.iuh.laptify_backend.order.entity.Order;
 import fit.iuh.laptify_backend.order.entity.OrderDetail;
 import fit.iuh.laptify_backend.order.entity.UserPlacementInfo;
 import fit.iuh.laptify_backend.order.repository.OrderRepository;
+import fit.iuh.laptify_backend.order.repository.UserPlacementRepository;
 import fit.iuh.laptify_backend.order.service.OrderService;
 import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
@@ -37,6 +40,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final AuthService authService;
     private final CartRepository cartRepository;
+    private final UserPlacementRepository userPlacementRepository;
+    private final UserRepository userRepository;
 
     @Override
     public OrderResponse getOrderByTrackingCode(String trackingCode) {
@@ -61,6 +66,22 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PageResponse<List<OrderDisplayResponse>> getOrders(PageRequest page) {
         return null;
+    }
+
+    @Override
+    public CustomerOrderInfoResponse getLatestCustomerPlacementInfo(Long userId) {
+        CustomerOrderInfoResponse res =  userPlacementRepository.getLatestSavedCustomerPlacementInfo(userId)
+                .orElse((null));
+
+        if(res == null){
+            User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
+            return CustomerOrderInfoResponse.builder()
+                    .customerName(user.getName())
+                    .email(user.getEmail())
+                .build();
+        }
+
+        return res;
     }
 
     @Override
@@ -110,11 +131,6 @@ public class OrderServiceImpl implements OrderService {
                 customer.getAddress(),
                 customer.isSaved()
         );
-//        User user = authService.getCurrentUser();
-//
-//        if(user != null){
-//            customerInfo.setUser(user);
-//        }
         try {
             User user = authService.getCurrentUser();
             customerInfo.setUser(user);

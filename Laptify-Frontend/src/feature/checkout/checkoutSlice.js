@@ -1,13 +1,14 @@
+import { getCustomerInfo } from "@/feature/checkout/checkoutThunk.js";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialValue = {
   items: [],
   customerInfo: {
-    fullName: '',
+    customerName: '',
     email: '',
     address: '',
     phoneNumber: '',
-    saveForNextTime: false,
+    isSaved: false,
   },
 };
 
@@ -24,13 +25,18 @@ const checkoutSlice = createSlice({
     clearCheckout: (state) => {
       state.items = [];
       state.customerInfo = {
-        fullName: '',
+        customerName: '',
         email: '',
         address: '',
         phoneNumber: '',
-        saveForNextTime: false,
+        isSaved: false,
       };
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getCustomerInfo.fulfilled, (state, action) => {
+      state.customerInfo = { ...action.payload, isSaved: false };
+    });
   },
 });
 

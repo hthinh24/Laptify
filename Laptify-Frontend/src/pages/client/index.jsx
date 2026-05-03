@@ -5,6 +5,7 @@ import Footer from "./Footer.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserWishlist } from "@/feature/wishlist/wishlistThunk.js";
 import { getCart } from "@/feature/cart/cartThunk.js";
+import { getCustomerInfo } from "@/feature/checkout/checkoutThunk.js";
 
 const RootPage = () => {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ const RootPage = () => {
       console.log("Fetching user wishlist...");
       dispatch(fetchUserWishlist());
       dispatch(getCart());
+      dispatch(getCustomerInfo())
     } else {
       console.log("User not authenticated, skipping wishlist fetch.");
     }

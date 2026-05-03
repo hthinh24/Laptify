@@ -13,4 +13,5 @@ public interface AuthService {
     AuthResult refreshToken(String refreshToken);
     User getCurrentUser();
     ResponseCookie logout(String refreshToken);
+
 }

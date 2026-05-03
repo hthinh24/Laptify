@@ -17,9 +17,9 @@ export default function CustomerInfoSection({
         <CustomInput
           label='Họ và tên*'
           placeholder='Nhập họ và tên'
-          value={formData.fullName || ''}
-          onChange={(e) => handleChange('fullName', e.target.value)}
-          error={errors.fullName}
+          value={formData.customerName || ''}
+          onChange={(e) => handleChange('customerName', e.target.value)}
+          error={errors.customerName}
         />
 
         {/* Email */}
@@ -56,10 +56,8 @@ export default function CustomerInfoSection({
         <input
           type='checkbox'
           id='saveInfo'
-          checked={formData.saveForNextTime || false}
-          onChange={(e) =>
-            handleCheckboxChange('saveForNextTime', e.target.checked)
-          }
+          checked={formData.isSaved || false}
+          onChange={(e) => handleCheckboxChange('isSaved', e.target.checked)}
           className='w-4 h-4 text-red-500 rounded focus:ring-red-500 cursor-pointer'
         />
         <label

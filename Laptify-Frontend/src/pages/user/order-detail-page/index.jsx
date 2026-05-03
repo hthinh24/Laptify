@@ -17,7 +17,7 @@ const OrderDetailUserPage = () => {
   const [formData, setFormData] = useState({
     id: '',
     customerName: '',
-    phone: '',
+    phoneNumber: '',
     address: '',
     orderDate: '',
     status: '',
@@ -32,7 +32,7 @@ const OrderDetailUserPage = () => {
           setFormData({
             id: res?.id,
             customerName: res?.customer?.customerName,
-            phone: res?.customer?.phoneNumber,
+            phoneNumber: res?.customer?.phoneNumber,
             address: res?.customer?.address,
             orderDate: res?.orderDate,
             status: res?.status,

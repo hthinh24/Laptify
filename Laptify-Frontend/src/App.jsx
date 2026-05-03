@@ -36,9 +36,8 @@ function AppContent() {
 function App() {
   return (
     <div className=''>
-      {/* <Toaster  /> */}
+      {/* <Toaster richColors /> */}
       <Provider store={store}>
-        <Toaster richColors />
         <AppContent />
       </Provider>
     </div>

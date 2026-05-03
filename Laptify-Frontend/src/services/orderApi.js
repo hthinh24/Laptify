@@ -11,3 +11,7 @@ export const getOrderById = (id) => {
 export const getOrderByTrackingCode = (trackingcode) => {
   return axiosClient.get(`/v1/orders/track-order/${trackingcode}`);
 };
+
+export const getLatestCustomerPlacementInfo = () => {
+  return axiosClient.get('/v1/orders/latest-placement-info');
+};

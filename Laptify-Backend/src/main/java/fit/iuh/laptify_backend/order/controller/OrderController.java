@@ -10,6 +10,7 @@ import fit.iuh.laptify_backend.product.dto.response.ProductSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,13 @@ import java.util.List;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
     private final OrderService orderService;
+
+    @GetMapping("/latest-placement-info")
+    public ResponseEntity<?> getLatestSavedCustomerInfo(
+            @AuthenticationPrincipal(expression = "id") Long userId
+    ){
+        return ResponseEntity.ok(orderService.getLatestCustomerPlacementInfo(userId));
+    }
 
     @GetMapping("/track-order/{tracking_code}")
     public ResponseEntity<OrderResponse> getOrderByTrackingCode(@PathVariable(name = "tracking_code") String trackingCode){

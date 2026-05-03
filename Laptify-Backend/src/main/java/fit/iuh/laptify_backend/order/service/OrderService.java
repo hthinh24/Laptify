@@ -1,6 +1,7 @@
 package fit.iuh.laptify_backend.order.service;
 
 import fit.iuh.laptify_backend.order.dto.request.OrderCreationRequest;
+import fit.iuh.laptify_backend.order.dto.response.CustomerOrderInfoResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderDisplayResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderResponse;
 import fit.iuh.laptify_backend.product.dto.common.PageRequest;
@@ -13,4 +14,5 @@ public interface OrderService {
     OrderResponse getOrderByTrackingCode(String trackingCode);
     OrderResponse getOrderById(Long orderId);
     PageResponse<List<OrderDisplayResponse>> getOrders(PageRequest page);
+    CustomerOrderInfoResponse getLatestCustomerPlacementInfo(Long userId);
 }

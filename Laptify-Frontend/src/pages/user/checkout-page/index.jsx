@@ -16,14 +16,15 @@ const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+
   // Get selected items from Redux
   const cartItems = useSelector((state) => state.checkout.items);
-  console.log(cartItems);
-  const customerInfoRedux = useSelector((state) => state.checkout.customerInfo);
+  const customerInfo = useSelector((state) => state.checkout.customerInfo);
 
-  const [formData, setFormData] = useState(customerInfoRedux);
+  const [formData, setFormData] = useState(customerInfo);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
 
   const handleChange = (field, value) => {
     setFormData({
@@ -48,7 +49,7 @@ const CheckoutPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.fullName.trim()) newErrors.fullName = 'Vui lòng nhập họ tên';
+    if (!formData.customerName.trim()) newErrors.customerName = 'Vui lòng nhập họ tên';
     if (!formData.email.trim()) newErrors.email = 'Vui lòng nhập email';
     if (!formData.address.trim()) newErrors.address = 'Vui lòng nhập địa chỉ';
     if (!formData.phoneNumber.trim())
@@ -67,14 +68,16 @@ const CheckoutPage = () => {
     if (!validateForm()) {
       return;
     }
+    console.log("validate")
 
     setLoading(true);
     try {
       dispatch(setCustomerInfo(formData));
+      console.log(customerInfo);
 
       const orderCreationRequest = {
         customer: {
-          name: formData.fullName,
+          name: formData.customerName,
           address: formData.address,
           phoneNumber: formData.phoneNumber,
           email: formData.email,
