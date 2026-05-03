@@ -1,5 +1,6 @@
 package fit.iuh.laptify_backend.auth.service.impl;
 
+import fit.iuh.laptify_backend.advice.exception.BadRequestException;
 import fit.iuh.laptify_backend.advice.exception.UnauthorizedException;
 import fit.iuh.laptify_backend.auth.dto.common.JwtClaimsDto;
 import fit.iuh.laptify_backend.auth.dto.common.JwtGenerationDto;
@@ -119,6 +120,31 @@ public class AuthServiceImpl implements AuthService {
         return buildAuthResult(user, tokenEntity.getToken());
     }
 
+    @Override
+    public ResponseCookie logout(String refreshToken) {
+        if(!jwtTokenProvider.validateToken(refreshToken)){
+            throw new BadRequestException("Invalid Token");
+        }
+
+        try {
+            JwtClaimsDto dto = jwtTokenProvider.extractClaimsFromRefreshToken(refreshToken);
+            RefreshToken token = refreshTokenRepository.findById(dto.getJid())
+                    .orElseThrow(() -> new UnauthorizedException("Refresh token not found"));
+
+            refreshTokenRepository.deleteById(token.getJid());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return ResponseCookie
+                .from("REFRESH_TOKEN", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(0)
+                .build();
+    }
 
     private AuthResult buildAuthResult(User user, String refreshToken) {
         String accessToken = buildAccessToken(user);

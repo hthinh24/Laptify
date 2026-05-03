@@ -26,6 +26,8 @@ public class RefreshToken {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private boolean isDeleted = false;
+
     public RefreshToken(String jid, String token, User user) {
         this.jid = jid;
         this.token = token;

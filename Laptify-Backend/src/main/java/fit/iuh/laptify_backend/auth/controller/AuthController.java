@@ -5,8 +5,11 @@ import fit.iuh.laptify_backend.auth.dto.request.UserRegisterRequest;
 import fit.iuh.laptify_backend.auth.dto.response.AuthResult;
 import fit.iuh.laptify_backend.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,7 +42,11 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok("Logout successful");
+    public ResponseEntity<Void> logout(@CookieValue(name = "REFRESH_TOKEN") String refreshToken){
+        ResponseCookie responseCookie = authService.logout(refreshToken);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .build();
     }
 }

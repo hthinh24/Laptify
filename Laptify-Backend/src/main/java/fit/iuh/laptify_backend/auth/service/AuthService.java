@@ -5,10 +5,12 @@ import fit.iuh.laptify_backend.auth.dto.request.UserRegisterRequest;
 import fit.iuh.laptify_backend.auth.dto.response.AuthResponse;
 import fit.iuh.laptify_backend.auth.dto.response.AuthResult;
 import fit.iuh.laptify_backend.auth.entity.User;
+import org.springframework.http.ResponseCookie;
 
 public interface AuthService {
     void register(UserRegisterRequest request);
     AuthResult login(UserLoginRequest request);
     AuthResult refreshToken(String refreshToken);
     User getCurrentUser();
+    ResponseCookie logout(String refreshToken);
 }
