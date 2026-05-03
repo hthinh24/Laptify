@@ -71,6 +71,21 @@ public class JwtTokenProvider {
         }
     }
 
+    public JWTClaimsSet getRawClaims(String token){
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+
+            // Verify signature
+            if (!signedJWT.verify(new MACVerifier(getSecretKey()))) {
+                throw new RuntimeException("Invalid token signature");
+            }
+
+            return signedJWT.getJWTClaimsSet();
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing refresh token", e);
+        }
+    }
+
     public JwtClaimsDto extractClaimsFromRefreshToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
@@ -111,7 +126,7 @@ public class JwtTokenProvider {
     }
 
 
-    public void validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
@@ -131,7 +146,7 @@ public class JwtTokenProvider {
             if(expirationTime == null || expirationTime.before(now)){
                 throw new InvalidToken();
             }
-
+            return true;
         } catch (JOSEException | ParseException e) {
             throw new InvalidToken();
         }
