@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 export const addItem = createAsyncThunk('cart/addItem', async (item, thunkAPI) => {
   try {
     const res = await addToCart(item);
-    return res.data.data;
+    return res.data.items;
   } catch (e) {
     const message = getErrorMessage(e, 'Thêm sản phẩm vào giỏ hàng thất bại');
     toast.error(message);
@@ -18,7 +18,7 @@ export const addItem = createAsyncThunk('cart/addItem', async (item, thunkAPI) =
 export const getCart = createAsyncThunk('cart/getCart', async (_, thunkAPI) => {
   try {
     const res = await getUserCart({page: 0, size: 5});
-    return res.data.itemSkuCodes;
+    return res.data.items;
   } catch (e) {
     const message = getErrorMessage(e, 'Lấy giỏ hàng thất bại');
     toast.error(message);

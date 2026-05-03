@@ -1,5 +1,5 @@
 export default function PricingSection({
-  subtotal = 0,
+  subTotal = 0,
   shipping = 0,
   total = 0,
   showShipping = true,
@@ -10,7 +10,7 @@ export default function PricingSection({
         <div className='flex justify-between items-center py-2 border-b border-gray-200'>
           <span className='text-gray-700'>Tổng tiền hàng:</span>
           <span className='font-semibold'>
-            {subtotal.toLocaleString('vi-VN', {
+            {subTotal.toLocaleString('vi-VN', {
               style: 'currency',
               currency: 'VND',
             })}

@@ -13,7 +13,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
-    Cart getCartByUser_Id(Long userId);
+    @Query(
+    """
+        SELECT c FROM Cart c
+        LEFT JOIN FETCH c.cartDetails
+        WHERE c.user.id = :userId
+    """
+    )
+    Cart getCartByUser_Id(@Param("userId") Long userId);
 
     @Query(value = """
             SELECT p.id as productId, p.name as productName, JSON_UNQUOTE(JSON_EXTRACT(s.media_metadata, '$[0].url')) as image ,s.sku_code as skuCode ,s.color as skuColor, cd.quantity, s.price, cd.created_at as createdAt

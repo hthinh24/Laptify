@@ -1,8 +1,6 @@
 package fit.iuh.laptify_backend.cart.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,5 +10,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartResponse {
-    private List<String> itemSkuCodes;
+    private List<Item> items;
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    public static class Item{
+        private int quantity;
+        private String skuCode;
+    }
 }

@@ -8,10 +8,7 @@ import fit.iuh.laptify_backend.auth.dto.request.UserRegisterRequest;
 import fit.iuh.laptify_backend.auth.dto.response.AuthResult;
 import fit.iuh.laptify_backend.auth.dto.response.AuthResponse;
 import fit.iuh.laptify_backend.auth.dto.response.UserSessionResponse;
-import fit.iuh.laptify_backend.auth.entity.RefreshToken;
-import fit.iuh.laptify_backend.auth.entity.Role;
-import fit.iuh.laptify_backend.auth.entity.RoleName;
-import fit.iuh.laptify_backend.auth.entity.User;
+import fit.iuh.laptify_backend.auth.entity.*;
 import fit.iuh.laptify_backend.auth.repository.RefreshTokenRepository;
 import fit.iuh.laptify_backend.auth.repository.RoleRepository;
 import fit.iuh.laptify_backend.auth.repository.UserRepository;
@@ -47,8 +44,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email).orElseThrow(() -> new UnauthorizedException("User not found"));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth.getPrincipal() instanceof UserPrincipal)) {
+            return null;
+        }
+
+        UserPrincipal user =  (UserPrincipal) auth.getPrincipal();
+        Long userId = user.getId();
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
     }
 
     @Override

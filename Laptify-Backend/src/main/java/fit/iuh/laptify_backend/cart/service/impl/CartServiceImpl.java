@@ -37,7 +37,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponse getUserCart(Long userId) {
         Cart cart = cartRepository.getCartByUser_Id(userId);
-        return new CartResponse(cart.getCartDetails().stream().map(cd -> cd.getSku().getSkuCode()).toList());
+        return mapCartDetailToItemResponse(cart.getCartDetails());
     }
 
     @Override
@@ -61,8 +61,9 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void deleteItem(Long userId, String skuCode) {
+    public CartResponse deleteItem(Long userId, String skuCode) {
         cartRepository.deleteItemByUserIdAndSkuCode(userId, skuCode);
+        return mapCartDetailToItemResponse(cartRepository.getCartByUser_Id(userId).getCartDetails());
     }
 
     private org.springframework.data.domain.PageRequest toPageable(PageRequest pageRequest) {
@@ -72,7 +73,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public ItemInCartResponse addToCart(Long userId, CartAdditionRequest request) {
+    public CartResponse addToCart(Long userId, CartAdditionRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
@@ -95,17 +96,19 @@ public class CartServiceImpl implements CartService {
 
         cart.addItem(cartDetail);
 
-        cartRepository.save(cart);
+        Cart savedCart = cartRepository.saveAndFlush(cart);
 
-        return ItemInCartResponse.builder()
-                .productId(product.getId())
-                .productName(product.getName())
-                .image(sku.getMediaMetadata().getFirst().getUrl())
-                .skuCode(sku.getSkuCode())
-                .skuColor(sku.getColor())
-                .price(sku.getPrice())
-                .quantity(cartDetail.getQuantity())
-                .createdAt(LocalDateTime.now())
-                .build();
+        return mapCartDetailToItemResponse(savedCart.getCartDetails());
+    }
+
+    private CartResponse mapCartDetailToItemResponse(List<CartDetail> cartDetails){
+        List<CartResponse.Item> items = cartDetails.stream()
+                .map(cd -> CartResponse.Item.builder()
+                    .quantity(cd.getQuantity())
+                    .skuCode(cd.getSku().getSkuCode())
+                    .build())
+                .toList();
+
+        return new CartResponse(items);
     }
 }

@@ -1,4 +1,5 @@
 export default function OrderItemSection({ items = [] }) {
+  console.log(items)
   return (
     <div className='bg-white rounded-lg shadow-md p-6 mb-6'>
       <h2 className='text-lg font-semibold text-gray-900 mb-4'>

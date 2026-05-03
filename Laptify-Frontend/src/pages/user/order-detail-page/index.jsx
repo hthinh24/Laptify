@@ -174,7 +174,7 @@ const OrderDetailUserPage = () => {
       />
       <div className='flex justify-center my-6'>
         <Button className={'px-6 py-4'}>
-          <Link to={'/'}>Back to home</Link>
+          <Link to={'/'}>Trở về trang chủ</Link>
         </Button>
       </div>
     </div>

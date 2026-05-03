@@ -4,6 +4,9 @@ import fit.iuh.laptify_backend.advice.exception.UnauthorizedException;
 import fit.iuh.laptify_backend.auth.entity.User;
 import fit.iuh.laptify_backend.auth.service.AuthService;
 import fit.iuh.laptify_backend.advice.exception.BadRequestException;
+import fit.iuh.laptify_backend.cart.entity.Cart;
+import fit.iuh.laptify_backend.cart.entity.CartDetail;
+import fit.iuh.laptify_backend.cart.repository.CartRepository;
 import fit.iuh.laptify_backend.order.dto.request.OrderCreationRequest;
 import fit.iuh.laptify_backend.order.dto.response.OrderDisplayResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderResponse;
@@ -19,6 +22,7 @@ import fit.iuh.laptify_backend.product.repository.SkuRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,10 +31,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     private final SkuRepository skuRepository;
     private final OrderRepository orderRepository;
     private final AuthService authService;
+    private final CartRepository cartRepository;
 
     @Override
     public OrderResponse getOrderByTrackingCode(String trackingCode) {
@@ -72,7 +78,22 @@ public class OrderServiceImpl implements OrderService {
         order.setShippingFee(BigDecimal.valueOf(30000));
         order.setTrackingCode(generateTrackingCode());
 
+        removeCartItemAfterOrder(request.getProducts());
+
         return mapEntityToResponse(orderRepository.saveAndFlush(order));
+    }
+
+    private void removeCartItemAfterOrder(List<OrderCreationRequest.ProductInfo> productInfos){
+        try {
+            User currentuser = authService.getCurrentUser();
+            Cart cart = cartRepository.getCartByUser_Id(currentuser.getId());
+
+            for(OrderCreationRequest.ProductInfo pi : productInfos){
+                cart.getCartDetails().removeIf(cd -> cd.getSku().getSkuCode().equalsIgnoreCase(pi.getSkuCode()));
+            }
+        }catch (UnauthorizedException ignored){
+            log.info("User: unknown");
+        }
     }
 
     private BigDecimal calculateTotalPrice(List<OrderDetail> orderDetails){

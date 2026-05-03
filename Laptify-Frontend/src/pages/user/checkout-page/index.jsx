@@ -18,6 +18,7 @@ const CheckoutPage = () => {
 
   // Get selected items from Redux
   const cartItems = useSelector((state) => state.checkout.items);
+  console.log(cartItems);
   const customerInfoRedux = useSelector((state) => state.checkout.customerInfo);
 
   const [formData, setFormData] = useState(customerInfoRedux);
@@ -58,9 +59,9 @@ const CheckoutPage = () => {
   };
 
   // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + item.subTotal, 0);
+  const subTotal = cartItems.reduce((sum, item) => sum + item.subTotal, 0);
   const shipping = 0; // Free shipping
-  const total = subtotal + shipping;
+  const total = subTotal + shipping;
 
   const handleCheckout = async () => {
     if (!validateForm()) {
@@ -107,7 +108,7 @@ const CheckoutPage = () => {
             id: id,
             items: orderDetails,
             total: totalDue,
-            subtotal: totalPrice,
+            subTotal: totalPrice,
             shipping: shippingFee,
             customerInfo: customer,
             trackingCode: trackingCode
@@ -155,7 +156,7 @@ const CheckoutPage = () => {
       <OrderItemSection items={cartItems} />
 
       {/* Pricing Section */}
-      <PricingSection subtotal={subtotal} shipping={shipping} total={total} />
+      <PricingSection subTotal={subTotal} shipping={shipping} total={total} />
 
       {/* Checkout Button */}
       <div className='flex justify-end mb-6'>

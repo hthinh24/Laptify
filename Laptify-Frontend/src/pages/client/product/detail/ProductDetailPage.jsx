@@ -5,10 +5,14 @@ import { setItems } from '@/feature/checkout/checkoutSlice';
 import ProductImageGallery from './ProductImageGallery';
 import ColorVariantSelector from './ColorVariantSelector';
 import QuantitySelector from './QuantitySelector';
-import { Heart, Truck, RotateCcw } from 'lucide-react';
+import { Heart, Truck, RotateCcw, ShoppingCart } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import ProductCard from '@/pages/common/product/ProductCard';
 import { addItem, removeItem } from '@/feature/wishlist/wishlistThunk';
+import { addItem as addItemToCart } from '@/feature/cart/cartThunk';
+import { updateItemQuantity } from '@/services/cartApi';
+import { getErrorMessage } from '@/lib/axiosClient';
+import { toast } from 'sonner';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
@@ -16,6 +20,7 @@ const ProductDetailPage = () => {
   const dispatch = useDispatch();
 
   const isWishlisted = useSelector((state) => state.wishlist.productIdMap[productId]);
+  const cart = useSelector((state) => state.cart.cart);
 
   const [productDetail, setProductDetail] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -96,6 +101,38 @@ const ProductDetailPage = () => {
     }
   }
 
+  const handleAddToCart = async () => {
+    if (!currentSelectVariant) return;
+
+    const skuCode = currentSelectVariant.skuCode;
+    
+    // Check if product with this skuCode already exists in cart
+    const existingItem = cart.find((item) => item.skuCode === skuCode);
+
+    console.log(existingItem)
+    try {
+      if (existingItem) {
+        // Product exists, update quantity
+        await updateItemQuantity({
+          skuCode: skuCode,
+          quantity: quantity + existingItem.quantity,
+        });
+        toast.success('Sản phẩm đã tồn tại trong giỏ hàng');
+      } else {
+        // Product doesn't exist, add to cart
+        dispatch(addItemToCart({
+          productId: productDetail.id,
+          skuCode: skuCode,
+          quantity: quantity,
+        }));
+        toast.success('Thêm sản phẩm vào giỏ hàng thành công');
+      }
+    } catch (e) {
+      const message = getErrorMessage(e, 'Thêm sản phẩm vào giỏ hàng thất bại');
+      toast.error(message);
+    }
+  } 
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-96'>
@@ -126,7 +163,7 @@ const ProductDetailPage = () => {
       </div>
     );
   }
-
+  
   return (
     <div className='container mx-auto px-4 py-8'>
       {/* Breadcrumb */}
@@ -139,18 +176,38 @@ const ProductDetailPage = () => {
         {/* Product Detail Section - Left/Top */}
         <div className='flex flex-col gap-6'>
           {/* Image Gallery */}
-          <ProductImageGallery images={currentSelectVariant?.mediaMetadataList || []} />
+          <ProductImageGallery
+            images={currentSelectVariant?.mediaMetadataList || []}
+          />
         </div>
 
         {/* Product Info Section - Right/Bottom */}
         <div className='flex flex-col gap-6'>
           {/* Title and Status */}
           <div>
-            <h1 className='text-3xl font-bold text-gray-800 mb-2'>{productDetail.name}</h1>
+            <h1 className='text-3xl font-bold text-gray-800 mb-2'>
+              {productDetail.name}
+            </h1>
             <div className='flex items-center gap-3'>
-              <span className='text-sm text-gray-600'>{currentSelectVariant?.totalPurchases} lượt mua</span>
-              <span className='text-sm bg-green-100 px-3 py-1 rounded font-medium' style={{ backgroundColor: currentSelectVariant?.stockQuantity > 0 ? '#d1fae5' : '#fef2f2', color: currentSelectVariant?.stockQuantity > 0 ? '#065f46' : '#991b1b' }}>
-                {currentSelectVariant?.stockQuantity > 0 ? 'Còn hàng' : 'Hết hàng'}
+              <span className='text-sm text-gray-600'>
+                {currentSelectVariant?.totalPurchases} lượt mua
+              </span>
+              <span
+                className='text-sm bg-green-100 px-3 py-1 rounded font-medium'
+                style={{
+                  backgroundColor:
+                    currentSelectVariant?.stockQuantity > 0
+                      ? '#d1fae5'
+                      : '#fef2f2',
+                  color:
+                    currentSelectVariant?.stockQuantity > 0
+                      ? '#065f46'
+                      : '#991b1b',
+                }}
+              >
+                {currentSelectVariant?.stockQuantity > 0
+                  ? 'Còn hàng'
+                  : 'Hết hàng'}
               </span>
             </div>
           </div>
@@ -161,7 +218,9 @@ const ProductDetailPage = () => {
           </div>
 
           {/* Description */}
-          <p className='text-gray-700 leading-relaxed'>{productDetail.description}</p>
+          <p className='text-gray-700 leading-relaxed'>
+            {productDetail.description}
+          </p>
 
           <Separator />
 
@@ -192,14 +251,26 @@ const ProductDetailPage = () => {
             </button>
             <button
               onClick={handleWishlistClick}
-              className={`px-6 py-3 rounded border-2 transition ${isWishlisted
-                ? 'border-red-600 bg-red-50'
-                : 'border-gray-300 hover:border-gray-400'
-                }`}
+              className={`px-6 py-3 rounded border-2 transition ${
+                isWishlisted
+                  ? 'border-red-600 bg-red-50'
+                  : 'border-gray-300 hover:border-gray-400'
+              }`}
             >
               <Heart
                 size={20}
-                className={isWishlisted ? 'text-red-600 fill-red-600' : 'text-gray-600'}
+                className={
+                  isWishlisted ? 'text-red-600 fill-red-600' : 'text-gray-600'
+                }
+              />
+            </button>
+            <button
+              onClick={handleAddToCart}
+              className={`px-6 py-3 rounded border-2 transition border-gray-300 hover:border-gray-400 active:border-red-600`}
+            >
+              <ShoppingCart
+                size={20}
+                className='active:text-red-600 active:fill-red-600'
               />
             </button>
           </div>
@@ -209,17 +280,26 @@ const ProductDetailPage = () => {
           {/* Service Info Cards */}
           <div className='space-y-4'>
             <div className='flex items-start gap-4'>
-              <Truck size={24} className='text-gray-600 flex-shrink-0 mt-1' />
+              <Truck size={24} className='text-gray-600 shrink-0 mt-1' />
               <div>
-                <h4 className='font-semibold text-gray-800 mb-1'>Miễn phí vận chuyển</h4>
-                <p className='text-sm text-gray-600'>Nhập mã bưu chính để xem lịch trình giao hàng</p>
+                <h4 className='font-semibold text-gray-800 mb-1'>
+                  Miễn phí vận chuyển
+                </h4>
+                <p className='text-sm text-gray-600'>
+                  Nhập mã bưu chính để xem lịch trình giao hàng
+                </p>
               </div>
             </div>
             <div className='flex items-start gap-4'>
-              <RotateCcw size={24} className='text-gray-600 flex-shrink-0 mt-1' />
+              <RotateCcw
+                size={24}
+                className='text-gray-600 shrink-0 mt-1'
+              />
               <div>
                 <h4 className='font-semibold text-gray-800 mb-1'>Trả hàng</h4>
-                <p className='text-sm text-gray-600'>Miễn phí trả hàng trong 30 ngày. Chi tiết</p>
+                <p className='text-sm text-gray-600'>
+                  Miễn phí trả hàng trong 30 ngày. Chi tiết
+                </p>
               </div>
             </div>
           </div>
@@ -230,7 +310,9 @@ const ProductDetailPage = () => {
       <div>
         <div className='flex items-center gap-3 mb-6'>
           <div className='w-1 h-6 bg-red-600 rounded'></div>
-          <h2 className='text-xl font-bold text-gray-800'>Các sản phẩm liên quan</h2>
+          <h2 className='text-xl font-bold text-gray-800'>
+            Các sản phẩm liên quan
+          </h2>
         </div>
 
         {relatedProducts?.length > 0 ? (
@@ -240,7 +322,9 @@ const ProductDetailPage = () => {
             ))}
           </div>
         ) : (
-          <p className='text-gray-600 text-center py-8'>Không có sản phẩm liên quan</p>
+          <p className='text-gray-600 text-center py-8'>
+            Không có sản phẩm liên quan
+          </p>
         )}
       </div>
     </div>

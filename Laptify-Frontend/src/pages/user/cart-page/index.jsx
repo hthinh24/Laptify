@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.jsx';
 import CartTable from '@/pages/user/cart-page/CartTable.jsx';
@@ -119,9 +119,8 @@ const CartPage = () => {
         productName: item.productName,
         price: item.price,
         quantity: item.quantity,
-        subtotal: item.price * item.quantity,
-        variant: item.variant,
-        image: item.image,
+        subTotal: item.price * item.quantity,
+        imageUrl: item.image,
       }));
 
     // Dispatch to Redux

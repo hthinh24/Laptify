@@ -42,7 +42,7 @@ const OrderSuccessPage = () => {
     id=1,
     items = [],
     total = 0,
-    subtotal = 0,
+    subTotal = 0,
     shipping = 0,
     trackingCode = '#B6CT3',
   } = orderData;
@@ -50,7 +50,7 @@ const OrderSuccessPage = () => {
   const handleViewDetails = () => {
     if(isAuthenticated)
     {
-      navigate(`/order-details/${orderData.id}`, { replace: true });
+      navigate(`/orders/${orderData.id}`, { replace: true });
     }
     else {
       navigate(`/track-order/${orderData.trackingCode}`, { replace: true });
@@ -95,7 +95,7 @@ const OrderSuccessPage = () => {
 
           {/* Pricing */}
           <PricingSection
-            subtotal={subtotal}
+            subtotal={subTotal}
             shipping={shipping}
             total={total}
             showShipping={true}

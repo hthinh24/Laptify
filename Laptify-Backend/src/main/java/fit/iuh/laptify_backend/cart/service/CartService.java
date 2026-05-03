@@ -10,9 +10,9 @@ import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import java.util.List;
 
 public interface CartService {
-    ItemInCartResponse addToCart(Long userId, CartAdditionRequest request);
+    CartResponse addToCart(Long userId, CartAdditionRequest request);
     PageResponse<List<ItemInCartResponse>> getUserProductsCart(Long userId, PageRequest request);
     CartResponse getUserCart(Long userId);
-    void deleteItem(Long userId, String skuCode);
+    CartResponse deleteItem(Long userId, String skuCode);
     ItemInCartResponse updateItemQuantity(Long userId, ItemUpdatingRequest request);
 }
