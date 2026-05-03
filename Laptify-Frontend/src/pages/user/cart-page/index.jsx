@@ -1,17 +1,50 @@
-import {useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.jsx';
 import CartTable from '@/pages/user/cart-page/CartTable.jsx';
 import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
 import { setItems } from '@/feature/checkout/checkoutSlice.js';
+import LoadingSpinner from '@/components/custom/LoadingSpinner.jsx';
+import { getItemsUserCart, updateItemQuantity } from '@/services/cartApi.js';
+import { getErrorMessage } from '@/lib/axiosClient.js';
+import { toast } from 'sonner';
+import { removeItemBySkuCode } from '@/feature/cart/cartThunk.js';
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {cart, isLoading} = useSelector((state) => state.cart)
   const [selectedItems, setSelectedItems] = useState([]);
+
+  const [cart, setCart] = useState([
+    {
+      productId: 1777040101109,
+      productName: '',
+      image: '',
+      skuCode: '',
+      skuColor: '',
+      quantity: 0,
+      price: 0,
+      createdAt: '',
+    },
+  ]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const res = await getItemsUserCart({ size: 5, page: 0 });
+        setCart(res.data.data);
+      } catch (e) {
+        const message = getErrorMessage(e, 'Lấy giỏ hàng thất bại');
+        toast.error(message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchCart();
+  }, []);
 
   // Calculate totals based on selected items
   const calculateTotals = () => {
@@ -20,45 +53,55 @@ const CartPage = () => {
     }
 
     const subtotal = cart
-      .filter((item) => selectedItems.includes(item.id))
+      .filter((item) => selectedItems.includes(item.skuCode))
       .reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    const shipping = 0; // Free shipping for now
+    const shipping = 0;
     return {
       subtotal,
       total: subtotal + shipping,
     };
   };
 
-  const handleSelectItem = (itemId) => {
+  const handleSelectItem = (selectedSkuCode) => {
     setSelectedItems((prev) =>
-      prev.includes(itemId)
-        ? prev.filter((id) => id !== itemId)
-        : [...prev, itemId]
+      prev.includes(selectedSkuCode)
+        ? prev.filter((skuCode) => skuCode !== selectedSkuCode)
+        : [...prev, selectedSkuCode]
     );
   };
 
   const handleSelectAll = (selectAll) => {
     if (selectAll) {
-      setSelectedItems(cart.map((item) => item.id));
+      setSelectedItems(cart.map((item) => item.skuCode));
     } else {
       setSelectedItems([]);
     }
   };
 
-  const handleDeleteItem = (itemId) => {
-    // setCartItems((prev) => prev.filter((item) => item.id !== itemId));
-    setSelectedItems((prev) => prev.filter((id) => id !== itemId));
+  const handleDeleteItem = (skuCode) => {
+    dispatch(removeItemBySkuCode(skuCode));
+    setCart((prev) => prev.filter((item) => item.skuCode !== skuCode));
+    setSelectedItems((prev) => prev.filter((skuCode) => skuCode !== skuCode));
+    toast.success("Xóa sản phẩm khỏi giỏ hàng thành công")
   };
 
-  const handleQuantityChange = (itemId, newQuantity) => {
+  const handleQuantityChange = async (selectedSkuCode, newQuantity) => {
     if (newQuantity < 1) return;
-
-    // setCartItems((prev) =>
-    //   prev.map((item) =>
-    //     item.id === itemId ? { ...item, quantity: newQuantity } : item
-    //   )
-    // );
+    try {
+      const response = await updateItemQuantity({
+        skuCode: selectedSkuCode,
+        quantity: newQuantity,
+      });
+      setCart((prev) =>
+        prev.map((item) =>
+          item.skuCode === selectedSkuCode ? response.data : item
+        )
+      );
+    } catch (e) {
+      const message = getErrorMessage(e, 'Cập nhật số lượng thất bại');
+      toast.error(message);
+    }
   };
 
   const handleCheckout = () => {
@@ -69,9 +112,10 @@ const CartPage = () => {
 
     // Get selected items data
     const selected = cart
-      .filter(item => selectedItems.includes(item.id))
-      .map(item => ({
+      .filter((item) => selectedItems.includes(item.skuCode))
+      .map((item) => ({
         id: item.id,
+        skuCode: item.skuCode,
         productName: item.productName,
         price: item.price,
         quantity: item.quantity,
@@ -90,10 +134,15 @@ const CartPage = () => {
   const totals = calculateTotals();
 
   return (
-    <div className='max-w-6xl mx-auto px-4 py-8'>
-      {isLoading && <p>Loading</p>}
+    <div className='my-8'>
+      {isLoading && (
+        <LoadingSpinner
+          className=''
+          description={'Đang tải danh sách giỏ hàng'}
+        />
+      )}
       {!isLoading && (
-        <>
+        <div className='max-w-6xl mx-auto'>
           {/* Header */}
           <div className='mb-8'>
             <h1 className='text-3xl font-bold text-gray-900 mb-2'>Giỏ hàng</h1>
@@ -137,7 +186,7 @@ const CartPage = () => {
               </Button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

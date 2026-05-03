@@ -17,8 +17,8 @@ export default function CartTable({
     onSelectAll(e.target.checked);
   };
 
-  const handleSelectItem = (itemId) => {
-    onSelectItem(itemId);
+  const handleSelectItem = (skuCode) => {
+    onSelectItem(skuCode);
   };
 
   return (
@@ -62,12 +62,15 @@ export default function CartTable({
               </tr>
             ) : (
               items.map((item) => (
-                <tr key={item.id} className='hover:bg-gray-50 transition'>
+                <tr key={item.skuCode} className='hover:bg-gray-50 transition'>
                   <td className='px-4 py-4'>
                     <input
                       type='checkbox'
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => handleSelectItem(item.id)}
+                      checked={
+                        selectedItems.length != 0 &&
+                        selectedItems.includes(item.skuCode)
+                      }
+                      onChange={() => handleSelectItem(item.skuCode)}
                       className='w-5 h-5 cursor-pointer'
                     />
                   </td>
@@ -84,9 +87,9 @@ export default function CartTable({
                         <p className='font-medium text-gray-900'>
                           {item.productName}
                         </p>
-                        {item.variant && (
+                        {item.skuColor && (
                           <p className='text-xs text-gray-500'>
-                            {item.variant}
+                            {item.skuColor}
                           </p>
                         )}
                       </div>
@@ -102,7 +105,7 @@ export default function CartTable({
                     <div className='flex items-center border border-gray-300 rounded-md w-24'>
                       <button
                         onClick={() =>
-                          onQuantityChange(item.id, item.quantity - 1)
+                          onQuantityChange(item.skuCode, item.quantity - 1)
                         }
                         disabled={item.quantity <= 1}
                         className='px-2 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed'
@@ -114,7 +117,7 @@ export default function CartTable({
                       </span>
                       <button
                         onClick={() =>
-                          onQuantityChange(item.id, item.quantity + 1)
+                          onQuantityChange(item.skuCode, item.quantity + 1)
                         }
                         className='px-2 py-1 text-gray-600 hover:bg-gray-100'
                       >
@@ -130,7 +133,7 @@ export default function CartTable({
                   </td>
                   <td className='px-4 py-4 text-center'>
                     <button
-                      onClick={() => onDeleteItem(item.id)}
+                      onClick={() => onDeleteItem(item.skuCode)}
                       className='p-2 text-red-600 hover:bg-red-50 rounded-md transition'
                       title='Xóa'
                     >

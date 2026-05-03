@@ -23,7 +23,7 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartDetail> cartDetails;
 
     public Cart(User user) {
@@ -32,6 +32,7 @@ public class Cart {
     }
 
     public void addItem(CartDetail cartDetail){
+        cartDetail.setCart(this);
         this.cartDetails.add(cartDetail);
     }
 }

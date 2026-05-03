@@ -2,15 +2,15 @@ import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchUserWishlist } from "@/feature/wishlist/wishlistThunk.js";
 import { getCart } from "@/feature/cart/cartThunk.js";
 
 const RootPage = () => {
   const dispatch = useDispatch();
+    const { isAuthenticated } = useSelector((state) => state.auth); 
 
   // TODO: Replace with actual authentication check
-  const isAuthenticated = true;
 
   useEffect(() => {
     if (isAuthenticated) {

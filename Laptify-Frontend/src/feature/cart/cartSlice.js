@@ -1,4 +1,4 @@
-import { addItem, getCart } from '@/feature/cart/cartThunk.js';
+import { addItem, getCart, removeItemBySkuCode } from '@/feature/cart/cartThunk.js';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialValue = {
@@ -13,15 +13,16 @@ const cartSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getCart.pending, (state) => {
-        console.log("get cart")
+        console.log('get cart');
         state.isLoading = true;
       })
       .addCase(getCart.fulfilled, (state, action) => {
-        state.isLoading = false 
-        state.cart = action.payload
+        state.isLoading = false;
+        state.cart = action.payload;
       })
-      .addCase(getCart.rejected, (state) => {
-        state.isLoading = true;
+      .addCase(getCart.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       })
 
       .addCase(addItem.pending, (state) => {
@@ -33,6 +34,20 @@ const cartSlice = createSlice({
       })
       .addCase(addItem.rejected, (state, action) => {
         state.error = action.payload;
+      })
+
+      .addCase(removeItemBySkuCode.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(removeItemBySkuCode.fulfilled, (state, action) => {
+         const skuCode = action.payload;
+          state.isLoading = false;
+         state.cart = state.cart.filter((item) => item !== skuCode);
+      })
+
+      .addCase(removeItemBySkuCode.rejected, (state,action) => {
+        state.isLoading = false;
+        state.error = action.payload
       });
   },
 });

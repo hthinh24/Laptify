@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import store from "@/feature/store.js";
 import { router } from "@/router/router.jsx";
 import { logout, isTokenValid } from "@/feature/auth/authSlice";
+import { Toaster } from "sonner";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -34,12 +35,12 @@ function AppContent() {
 
 function App() {
   return (
-    <div className="">
-    {/* <Toaster  /> */}
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
-
+    <div className=''>
+      {/* <Toaster  /> */}
+      <Provider store={store}>
+        <Toaster richColors />
+        <AppContent />
+      </Provider>
     </div>
   );
 }

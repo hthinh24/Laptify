@@ -3,18 +3,28 @@ package fit.iuh.laptify_backend.cart.service.impl;
 import fit.iuh.laptify_backend.auth.entity.User;
 import fit.iuh.laptify_backend.auth.service.AuthService;
 import fit.iuh.laptify_backend.cart.dto.request.CartAdditionRequest;
+import fit.iuh.laptify_backend.cart.dto.request.ItemUpdatingRequest;
 import fit.iuh.laptify_backend.cart.dto.response.CartResponse;
+import fit.iuh.laptify_backend.cart.dto.response.ItemInCartResponse;
 import fit.iuh.laptify_backend.cart.entity.Cart;
 import fit.iuh.laptify_backend.cart.entity.CartDetail;
 import fit.iuh.laptify_backend.cart.repository.CartRepository;
 import fit.iuh.laptify_backend.cart.service.CartService;
+import fit.iuh.laptify_backend.product.dto.common.PageRequest;
+import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.entity.Product;
 import fit.iuh.laptify_backend.product.entity.Sku;
 import fit.iuh.laptify_backend.product.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,13 +35,44 @@ public class CartServiceImpl implements CartService {
     private final AuthService authService;
 
     @Override
-    public CartResponse getSelfCart() {
-        Cart cart = authService.getCurrentUser().getCart();
-        return mapEntityToResponse(cart);
+    public CartResponse getUserCart(Long userId) {
+        Cart cart = cartRepository.getCartByUser_Id(userId);
+        return new CartResponse(cart.getCartDetails().stream().map(cd -> cd.getSku().getSkuCode()).toList());
     }
 
     @Override
-    public CartResponse addToCart(CartAdditionRequest request) {
+    public PageResponse<List<ItemInCartResponse>> getUserProductsCart(Long userId, PageRequest request) {
+        Pageable pageable = toPageable(request);
+        Page<ItemInCartResponse> page = cartRepository.findCartItemsByUserId(userId, pageable);
+        return PageResponse.<List<ItemInCartResponse>>builder()
+                .size(page.getSize())
+                .page(page.getNumber())
+                .totalPages(page.getTotalPages())
+                .data(page.getContent())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ItemInCartResponse updateItemQuantity(Long userId, ItemUpdatingRequest request) {
+        cartRepository.updateQuantityByUserIdAndSkuCode(userId, request.getSkuCode(), request.getQuantity());
+        return cartRepository.findCartItemByUserIdAndSkuCode(userId, request.getSkuCode());
+    }
+
+    @Override
+    @Transactional
+    public void deleteItem(Long userId, String skuCode) {
+        cartRepository.deleteItemByUserIdAndSkuCode(userId, skuCode);
+    }
+
+    private org.springframework.data.domain.PageRequest toPageable(PageRequest pageRequest) {
+        return org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.unsorted());
+    }
+
+
+    @Override
+    @Transactional
+    public ItemInCartResponse addToCart(Long userId, CartAdditionRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
@@ -44,7 +85,7 @@ public class CartServiceImpl implements CartService {
             throw new IllegalArgumentException("Sku stock isn't enough");
         }
 
-        Cart cart = authService.getCurrentUser().getCart();
+        Cart cart = cartRepository.getCartByUser_Id(userId);
 
         CartDetail cartDetail = new CartDetail(
                 sku,
@@ -53,22 +94,18 @@ public class CartServiceImpl implements CartService {
         );
 
         cart.addItem(cartDetail);
-        return mapEntityToResponse(cartRepository.saveAndFlush(cart));
-    }
 
-    private CartResponse mapEntityToResponse(Cart cart){
-        List<CartResponse.CartDetailInfo> cartDetailInfos = cart.getCartDetails().stream().map(item -> {
-            Sku sku = item.getSku();
-            return new CartResponse.CartDetailInfo(
-                    sku.getProduct().getName(),
-                    sku.getColor(),
-                    sku.getStockQuantity(),
-                    sku.getPrice(),
-                    item.getCreatedAt()
+        cartRepository.save(cart);
 
-            );
-        }).toList();
-
-        return new CartResponse(cartDetailInfos);
+        return ItemInCartResponse.builder()
+                .productId(product.getId())
+                .productName(product.getName())
+                .image(sku.getMediaMetadata().getFirst().getUrl())
+                .skuCode(sku.getSkuCode())
+                .skuColor(sku.getColor())
+                .price(sku.getPrice())
+                .quantity(cartDetail.getQuantity())
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }

@@ -12,16 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartResponse {
-    private List<CartDetailInfo> cartDetails;
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CartDetailInfo{
-        private String productName;
-        private String skuColor;
-        private int quantity;
-        private BigDecimal price;
-        private Instant createdAt;
-    }
+    private List<String> itemSkuCodes;
 }
