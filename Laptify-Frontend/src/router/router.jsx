@@ -184,7 +184,7 @@ export const router = createBrowserRouter([
         element: <OrderManagementPage />,
       },
       {
-        path: 'order-detail/:id',
+        path: 'orders/:id',
         element: <OrderDetailPage />,
       },
     ],

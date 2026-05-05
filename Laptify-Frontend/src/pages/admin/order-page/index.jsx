@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.jsx';
 import { Plus } from 'lucide-react';
@@ -6,78 +6,48 @@ import { Plus } from 'lucide-react';
 import Pagination from '@/components/custom/Paganation.jsx';
 import OrderTable from '@/pages/admin/order-page/OrderTable.jsx';
 import OrderFilter from '@/pages/admin/order-page/OrderFilter.jsx';
+import { getOrdersDisPlayForAdmin, searchOrderByFilter } from '@/services/orderApi.js';
+import { orderStatuses } from '@/utils/orderHelper.js';
+import { toast } from 'sonner';
+import { getErrorMessage } from '@/lib/axiosClient.js';
 
 // Mock data for orders
-const mockOrders = [
-  {
-    id: 1,
-    orderId: 'ĐH123456',
-    customerName: 'Laptop Lenovo',
-    phone: 'Rimmel',
-    orderDate: '12/12/2026',
-    total: 21000000,
-    status: 'Đang đóng gói',
-  },
-  {
-    id: 2,
-    orderId: 'ĐH123456',
-    customerName: 'Laptop Lenovo',
-    phone: 'Rimmel',
-    orderDate: '12/12/2026',
-    total: 21000000,
-    status: 'Đơn hàng mới',
-  },
-  {
-    id: 3,
-    orderId: 'ĐH123456',
-    customerName: 'Laptop Lenovo',
-    phone: 'Rimmel',
-    orderDate: '12/12/2026',
-    total: 21000000,
-    status: 'Đang vận chuyển',
-  },
-  {
-    id: 4,
-    orderId: 'ĐH123456',
-    customerName: 'Laptop Lenovo',
-    phone: 'Rimmel',
-    orderDate: '12/12/2026',
-    total: 21000000,
-    status: 'Đang đóng gói',
-  },
-  {
-    id: 5,
-    orderId: 'ĐH123456',
-    customerName: 'Laptop Lenovo',
-    phone: 'Rimmel',
-    orderDate: '12/12/2026',
-    total: 21000000,
-    status: 'Đang đóng gói',
-  },
-];
 
-const orderStatuses = [
-  'Đơn hàng mới',
-  'Đang đóng gói',
-  'Đang vận chuyển',
-  'Đã giao',
-];
 
 const OrderManagementPage = () => {
   const navigate = useNavigate();
-  const [orders, setOrders] = useState(mockOrders);
-  const [filteredOrders, setFilteredOrders] = useState(mockOrders);
+  const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false)
   const itemsPerPage = 5;
 
+  useEffect(() => {
+    const fecthOrders = async () => {
+      const res = (
+        await getOrdersDisPlayForAdmin({
+          size: itemsPerPage,
+          page: currentPage - 1,
+        })
+      ).data;
+      console.log(res.data);
+      setOrders(res.data);
+      setFilteredOrders(res.data);
+      setTotalPages(res.totalPages);
+    };
+    fecthOrders();
+  }, [currentPage]);
+
   const [filters, setFilters] = useState({
-    orderId: '',
-    phone: '',
+    id: "",
+    phoneNumber: '',
     status: '',
     orderDate: '',
   });
 
   const handleFilterChange = (filterName, value) => {
+    console.log(filterName+ " " + value)
     setFilters((prev) => ({
       ...prev,
       [filterName]: value,
@@ -85,30 +55,45 @@ const OrderManagementPage = () => {
   };
 
   const handleSearch = () => {
-    const filtered = orders.filter((order) => {
-      const matchOrderId =
-        filters.orderId === '' ||
-        order.orderId.toLowerCase().includes(filters.orderId.toLowerCase());
-      const matchPhone =
-        filters.phone === '' ||
-        order.phone.toLowerCase().includes(filters.phone.toLowerCase());
-      const matchStatus =
-        filters.status === '' ||
-        order.status.toLowerCase().includes(filters.status.toLowerCase());
-      const matchOrderDate =
-        filters.orderDate === '' || order.orderDate.includes(filters.orderDate);
+    const searchOrder = async () => {
+      try {
+        setIsLoading(true);
+        const params = new URLSearchParams({
+          page: (currentPage - 1).toString(),
+          size: itemsPerPage.toString(),
+        });
 
-      return matchOrderId && matchPhone && matchStatus && matchOrderDate;
-    });
+        console.log(filters.id)
 
-    setFilteredOrders(filtered);
-    setCurrentPage(1);
+        // Thêm các filter vào params nếu có giá trị
+        if (filters.id) params.append('orderId', filters.id);
+        if (filters.phoneNumber) params.append('phoneNumber', filters.phoneNumber);
+        if (filters.status) params.append('status', filters.status);
+        if (filters.orderDate) params.append('orderDate', filters.orderDate);
+
+        const res = (
+          await searchOrderByFilter({ params: params.toString() })
+        ).data;
+
+        setFilteredOrders(res.data);
+        setTotalPages(res.totalPages);
+        setCurrentPage(1);
+        toast.success('Tìm kiếm đơn hàng thành công');
+      } catch (e) {
+        const message = getErrorMessage(e, 'Tìm kiếm đơn hàng thất bại');
+        toast.error(message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    searchOrder();
   };
 
   const handleClear = () => {
     setFilters({
-      orderId: '',
-      phone: '',
+      id: "",
+      phoneNumber: '',
       status: '',
       orderDate: '',
     });
@@ -123,11 +108,13 @@ const OrderManagementPage = () => {
       setFilteredOrders(
         updated.filter((order) => {
           const matchOrderId =
-            filters.orderId === '' ||
-            order.orderId.toLowerCase().includes(filters.orderId.toLowerCase());
+            filters.id === '' ||
+            order.id.toLowerCase().includes(filters.id.toLowerCase());
           const matchPhone =
-            filters.phone === '' ||
-            order.phone.toLowerCase().includes(filters.phone.toLowerCase());
+            filters.phoneNumber === '' ||
+            order.phoneNumber
+              .toLowerCase()
+              .includes(filters.phoneNumber.toLowerCase());
           const matchStatus =
             filters.status === '' ||
             order.status.toLowerCase().includes(filters.status.toLowerCase());
@@ -142,10 +129,8 @@ const OrderManagementPage = () => {
   };
 
   const handleEdit = (id) => {
-    navigate(`/admin/order-detail/${id}`);
+    navigate(`/admin/orders/${id}`);
   };
-
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
 
   return (
     <div>
@@ -175,11 +160,10 @@ const OrderManagementPage = () => {
       </div>
 
       <OrderTable
+        isLoading={isLoading}
         orders={filteredOrders}
         onDelete={handleDelete}
         onEdit={handleEdit}
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
       />
 
       <Pagination

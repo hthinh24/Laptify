@@ -20,8 +20,8 @@ export default function OrderFilter({
           <CustomInput
             label='Mã đơn hàng'
             placeholder='Nhập mã đơn hàng'
-            value={filters.orderId}
-            onChange={(e) => onFilterChange('orderId', e.target.value)}
+            value={filters.id}
+            onChange={(e) => onFilterChange('id',e.target.value)}
           />
           <CustomSelect
             label='Tình trạng'
@@ -36,8 +36,8 @@ export default function OrderFilter({
           <CustomInput
             label='Số điện thoại'
             placeholder='Nhập số điện thoại'
-            value={filters.phone}
-            onChange={(e) => onFilterChange('phone', e.target.value)}
+            value={filters.phoneNumber}
+            onChange={(e) => onFilterChange('phoneNumber', e.target.value)}
           />
           <CustomInput
             label='Thời gian đặt hàng'

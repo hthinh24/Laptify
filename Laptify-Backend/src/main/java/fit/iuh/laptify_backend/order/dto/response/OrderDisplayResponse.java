@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,7 +15,8 @@ public class OrderDisplayResponse {
     private Long id;
     private String customerName;
     private String phoneNumber;
-    private Instant orderDate;
+    private LocalDateTime orderDate;
     private BigDecimal totalPrice;
     private String status;
+
 }

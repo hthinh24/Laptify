@@ -4,12 +4,8 @@ export default function OrderTable({
   orders,
   onDelete,
   onEdit,
-  currentPage,
-  itemsPerPage,
 }) {
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = orders.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = orders;
 
   return (
     <div className='bg-white rounded-lg shadow-md overflow-hidden'>
@@ -51,19 +47,19 @@ export default function OrderTable({
               currentItems.map((order) => (
                 <tr key={order.id} className='hover:bg-gray-50 transition'>
                   <td className='px-6 py-4 text-sm text-gray-900'>
-                    {order.orderId}
+                    {order.id}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-900'>
                     {order.customerName}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {order.phone}
+                    {order.phoneNumber}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
                     {order.orderDate}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {order.total.toLocaleString('vi-VN', {
+                    {order.totalPrice.toLocaleString('vi-VN', {
                       style: 'currency',
                       currency: 'VND',
                     })}

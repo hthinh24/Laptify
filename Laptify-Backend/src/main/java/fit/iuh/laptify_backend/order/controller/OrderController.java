@@ -1,13 +1,16 @@
 package fit.iuh.laptify_backend.order.controller;
 
-import fit.iuh.laptify_backend.order.dto.request.OrderCreationRequest;
+import fit.iuh.laptify_backend.order.dto.request.*;
 import fit.iuh.laptify_backend.order.dto.response.OrderDisplayResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderResponse;
 import fit.iuh.laptify_backend.order.service.OrderService;
 import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
-import fit.iuh.laptify_backend.product.dto.response.ProductSummaryResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/api/v1/orders")
 public class OrderController {
     private final OrderService orderService;
@@ -47,9 +51,36 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrders(pageRequest));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<List<OrderDisplayResponse>>> searchOrder(
+            @ModelAttribute OrderFilter request,
+            @PageableDefault(direction = Sort.Direction.DESC, sort = "orderDate") Pageable pageable)
+    {
+        log.info("REQUEST " + request.toString());
+        return ResponseEntity.ok(orderService.searchOrderByFilter(pageable, request));
+    }
+
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderCreationRequest request){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(orderService.createOrder(request));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderResponse> updateOrder(
+        @PathVariable("id") Long orderId,
+        @RequestBody OrderUpdatingRequest request
+    ){
+        return ResponseEntity
+                .ok(orderService.updateOrder(request, orderId));
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<OrderResponse> updateOrder(
+            @PathVariable("id") Long orderId,
+            @RequestBody OrderStatusUpdatingRequest request
+            ){
+        return ResponseEntity
+                .ok(orderService.updateOrderStatus(request, orderId));
     }
 }

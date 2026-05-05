@@ -6,16 +6,20 @@ import fit.iuh.laptify_backend.auth.repository.UserRepository;
 import fit.iuh.laptify_backend.auth.service.AuthService;
 import fit.iuh.laptify_backend.advice.exception.BadRequestException;
 import fit.iuh.laptify_backend.cart.entity.Cart;
-import fit.iuh.laptify_backend.cart.entity.CartDetail;
 import fit.iuh.laptify_backend.cart.repository.CartRepository;
 import fit.iuh.laptify_backend.order.dto.request.OrderCreationRequest;
+import fit.iuh.laptify_backend.order.dto.request.OrderFilter;
+import fit.iuh.laptify_backend.order.dto.request.OrderStatusUpdatingRequest;
+import fit.iuh.laptify_backend.order.dto.request.OrderUpdatingRequest;
 import fit.iuh.laptify_backend.order.dto.response.CustomerOrderInfoResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderDisplayResponse;
 import fit.iuh.laptify_backend.order.dto.response.OrderResponse;
 import fit.iuh.laptify_backend.order.entity.Order;
 import fit.iuh.laptify_backend.order.entity.OrderDetail;
+import fit.iuh.laptify_backend.order.entity.OrderStatus;
 import fit.iuh.laptify_backend.order.entity.UserPlacementInfo;
 import fit.iuh.laptify_backend.order.repository.OrderRepository;
+import fit.iuh.laptify_backend.order.repository.OrderSpecification;
 import fit.iuh.laptify_backend.order.repository.UserPlacementRepository;
 import fit.iuh.laptify_backend.order.service.OrderService;
 import fit.iuh.laptify_backend.product.dto.common.PageRequest;
@@ -26,6 +30,8 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -65,7 +71,60 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PageResponse<List<OrderDisplayResponse>> getOrders(PageRequest page) {
-        return null;
+        Pageable pageable = toPageable(page);
+
+        var pageResult = orderRepository.findAllOrdersWithPagination(pageable);
+
+        return PageResponse.<List<OrderDisplayResponse>>builder()
+                .page(pageResult.getNumber())
+                .size(pageResult.getSize())
+                .totalElements(pageResult.getTotalElements())
+                .totalPages(pageResult.getTotalPages())
+                .hasNext(pageResult.hasNext())
+                .data(pageResult.getContent())
+                .build();
+    }
+
+    @Override
+    public PageResponse<List<OrderDisplayResponse>> searchOrderByFilter(Pageable page, OrderFilter orderFilter) {
+        validateOrderFilter(orderFilter);
+
+        var pageResult = orderRepository.findAll(OrderSpecification.getSpecification(orderFilter), page);
+
+        List<OrderDisplayResponse> responses = pageResult.getContent().stream()
+                .map(this::mapEntityToOrderDisplayResponse)
+                .toList();
+
+        return PageResponse.<List<OrderDisplayResponse>>builder()
+                .page(pageResult.getNumber())
+                .size(pageResult.getSize())
+                .totalElements(pageResult.getTotalElements())
+                .totalPages(pageResult.getTotalPages())
+                .hasNext(pageResult.hasNext())
+                .data(responses)
+                .build();
+    }
+
+    private void validateOrderFilter(OrderFilter orderFilter) {
+        if (orderFilter.getOrderId() != null && !orderFilter.getOrderId().isEmpty()) {
+            try {
+                Long.parseLong(orderFilter.getOrderId());
+            } catch (NumberFormatException e) {
+                throw new BadRequestException("Invalid order ID: must be a valid number");
+            }
+        }
+
+        if (orderFilter.getStatus() != null && !orderFilter.getStatus().isEmpty()) {
+            try {
+                OrderStatus.valueOf(orderFilter.getStatus().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new BadRequestException("Invalid order status: " + orderFilter.getStatus());
+            }
+        }
+    }
+
+    private org.springframework.data.domain.PageRequest toPageable(PageRequest pageRequest) {
+        return org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), Sort.unsorted());
     }
 
     @Override
@@ -101,6 +160,46 @@ public class OrderServiceImpl implements OrderService {
 
         removeCartItemAfterOrder(request.getProducts());
 
+        return mapEntityToResponse(orderRepository.saveAndFlush(order));
+    }
+
+    @Override
+    public OrderResponse updateOrder(OrderUpdatingRequest request, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        order.getUserInfoPlacement().setCustomerName(request.getCustomerName());
+        order.getUserInfoPlacement().setAddress(request.getAddress());
+        order.getUserInfoPlacement().setPhoneNumber(request.getPhoneNumber());
+
+        return mapEntityToResponse(orderRepository.saveAndFlush(order));
+    }
+
+    private OrderStatus validateOrderStatus(String status){
+        log.info(status);
+        return switch (status) {
+            case "PENDING" -> OrderStatus.PENDING;
+            case "PACKAGING" -> OrderStatus.PACKAGING;
+            case "SHIPPING" -> OrderStatus.SHIPPING;
+            case "RECEIVED" -> OrderStatus.RECEIVED;
+            case "RETURNED" -> OrderStatus.RETURNED;
+            default -> null;
+        };
+    }
+
+    @Override
+    public OrderResponse updateOrderStatus(OrderStatusUpdatingRequest orderStatus, Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+
+        OrderStatus newStatus = validateOrderStatus(orderStatus.getStatus());
+
+        if(newStatus == null){
+            throw new BadRequestException("Invalid order status");
+        }
+
+        order.setStatus(newStatus);
         return mapEntityToResponse(orderRepository.saveAndFlush(order));
     }
 
@@ -215,6 +314,16 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
+    private OrderDisplayResponse mapEntityToOrderDisplayResponse(Order order) {
+        return new OrderDisplayResponse(
+                order.getId(),
+                order.getUserInfoPlacement().getCustomerName(),
+                order.getUserInfoPlacement().getPhoneNumber(),
+                order.getOrderDate().atZone(java.time.ZoneOffset.UTC).toLocalDateTime(),
+                order.getTotalPrice(),
+                order.getStatus().name()
+        );
+    }
 
     private String generateTrackingCode(){
         UUID uuid = UUID.randomUUID();

@@ -1,48 +1,80 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button.jsx';
 import { ArrowLeft, ChevronLeft } from 'lucide-react';
-import CustomInput from '@/components/custom/CustomInput.jsx';
-import CustomSelect from '@/components/custom/CustomSelect.jsx';
 import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
 import OrderItemSection from '@/pages/common/order-management/OrderItemSection.jsx';
-import { getOrderById } from '@/services/orderApi.js';
+import {
+  getOrderById,
+  updateOrderForAdmin,
+  updateOrderStatusForAdmin,
+} from '@/services/orderApi.js';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/axiosClient.js';
+import LoadingSpinner from '@/components/custom/LoadingSpinner.jsx';
+import CustomSelect from '@/components/custom/CustomSelect.jsx';
+import { orderStatuses } from '@/utils/orderHelper.js';
 
 // Mock data for orders with detailed information
 
-const orderStatuses = [
-  'Đơn hàng mới',
-  'Đang đóng gói',
-  'Đang vận chuyển',
-  'Đã giao',
-];
 
 export default function OrderDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [order, setOrder] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-
+  const [order, setOrder] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    id: 1,
+    customerName: '',
+    phoneNumber: '',
+    address: '',
+    orderDate: '',
+    status: '',
+  });
   // Find the order by id
+
+  const setOrderInfo = useCallback(
+    (order) => {
+      setOrder(order);
+      const { status, orderDate } = order;
+      console.log(status);
+
+      const { customerName, phoneNumber, address } = order.customer;
+      setFormData({
+        id: id,
+        customerName: customerName,
+        phoneNumber: phoneNumber,
+        address: address,
+        orderDate: orderDate,
+        status: status,
+      });
+    },
+    [id]
+  );
   useEffect(() => {
     const fetchOrder = async () => {
-      if(id){
-        try{
-          const res = (await getOrderById(id)).data
-          setOrder(res)
-        }catch(e){
-          const message = getErrorMessage(e, "Lấy đơn hàng thất bại")
-          toast.error(message)
-        }
-        finally{
-          setIsLoading(false)
+      if (id) {
+        try {
+          const res = (await getOrderById(id)).data;
+          setOrderInfo(res);
+        } catch (e) {
+          const message = getErrorMessage(e, 'Lấy đơn hàng thất bại');
+          toast.error(message);
+        } finally {
+          setIsLoading(false);
         }
       }
-    }
+    };
     fetchOrder();
-  }, [id])
+  }, [id, setOrderInfo]);
+
+  if (isLoading) {
+    return (
+      <div className=''>
+        <LoadingSpinner description={'Đang tải đơn hàng'} />
+      </div>
+    );
+  }
 
   if (!order) {
     return (
@@ -58,14 +90,10 @@ export default function OrderDetailPage() {
     );
   }
 
-  const [formData, setFormData] = useState({
-    id: order.id,
-    customerName: order.customer?.customerName,
-    phone: order.customer?.phoneNumber,
-    address: order.customer?.address,
-    orderDate: order.orderDate,
-    status: order.status,
-  });
+  const orderStatusLabels = orderStatuses.map((item) => ({
+    value: item.value,
+    label: item.label,
+  }));
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -76,20 +104,53 @@ export default function OrderDetailPage() {
   };
 
   const handleStatusChange = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      status: value,
-    }));
+    const updatOrderStatus = async () => {
+      if (id) {
+        try {
+          const res = (await updateOrderStatusForAdmin({ status: value }, id))
+            .data;
+          setOrderInfo(res);
+          toast.success('Cập nhật trang thái đơn hàng thành công');
+        } catch (e) {
+          const message = getErrorMessage(
+            e,
+            'Cập nhật trạng thái đơn hàng thất bại'
+          );
+          toast.error(message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    updatOrderStatus();
   };
 
   const handleCancel = () => {
     navigate(-1);
   };
 
-  const handleSave = () => {
-    // TODO: Call API to update order
-    console.log('Saving order:', formData);
-    alert('Cập nhật đơn hàng thành công');
+  const handleUpdate = () => {
+    const updateOrder = async () => {
+      if (id) {
+        try {
+          const requestData = {
+            customerName: formData.customerName,
+            phoneNumber: formData.phoneNumber,
+            address: formData.address,
+          };
+          const res = (await updateOrderForAdmin(requestData, id)).data;
+          setOrderInfo(res);
+          toast.success('Cập nhật đơn hàng thành công');
+        } catch (e) {
+          const message = getErrorMessage(e, 'Cập nhật đơn hàng thất bại');
+          toast.error(message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    updateOrder();
   };
 
   const handleDelete = () => {
@@ -157,8 +218,8 @@ export default function OrderDetailPage() {
               </label>
               <input
                 type='text'
-                name='phone'
-                value={formData.phone}
+                name='phoneNumber'
+                value={formData.phoneNumber}
                 onChange={handleInputChange}
                 className={`w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-900 cursor-text`}
               />
@@ -191,23 +252,14 @@ export default function OrderDetailPage() {
                 className='w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600 cursor-not-allowed'
               />
             </div>
-            <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Tình trạng
-              </label>
-              <select
-                name='status'
-                value={formData.status}
-                onChange={(e) => handleStatusChange(e.target.value)}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-900 cursor-pointer`}
-              >
-                {orderStatuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
+
+            <CustomSelect
+              label='Tình trạng'
+              placeholder='Chọn tình trạng'
+              value={formData.status}
+              onChange={handleStatusChange}
+              options={orderStatusLabels}
+            />
           </div>
         </div>
       </div>
@@ -217,7 +269,7 @@ export default function OrderDetailPage() {
 
       {/* Pricing Section */}
       <PricingSection
-        subtotal={order.totalPrice}
+        subTotal={order.totalPrice}
         shipping={order.shippingFee}
         total={order.totalDue}
         showShipping={true}
@@ -232,7 +284,7 @@ export default function OrderDetailPage() {
           Xóa đơn hàng
         </Button>
         <Button
-          onClick={handleSave}
+          onClick={handleUpdate}
           className='px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-medium'
         >
           Cập nhật thông tin
