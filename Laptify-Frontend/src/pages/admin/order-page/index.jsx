@@ -6,13 +6,16 @@ import { Plus } from 'lucide-react';
 import Pagination from '@/components/custom/Paganation.jsx';
 import OrderTable from '@/pages/admin/order-page/OrderTable.jsx';
 import OrderFilter from '@/pages/admin/order-page/OrderFilter.jsx';
-import { getOrdersDisPlayForAdmin, searchOrderByFilter } from '@/services/orderApi.js';
+import {
+  deleteOrderById,
+  getOrdersDisPlayForAdmin,
+  searchOrderByFilter,
+} from '@/services/orderApi.js';
 import { orderStatuses } from '@/utils/orderHelper.js';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/axiosClient.js';
 
 // Mock data for orders
-
 
 const OrderManagementPage = () => {
   const navigate = useNavigate();
@@ -20,7 +23,7 @@ const OrderManagementPage = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const itemsPerPage = 5;
 
   useEffect(() => {
@@ -40,14 +43,14 @@ const OrderManagementPage = () => {
   }, [currentPage]);
 
   const [filters, setFilters] = useState({
-    id: "",
+    id: '',
     phoneNumber: '',
     status: '',
     orderDate: '',
   });
 
   const handleFilterChange = (filterName, value) => {
-    console.log(filterName+ " " + value)
+    console.log(filterName + ' ' + value);
     setFilters((prev) => ({
       ...prev,
       [filterName]: value,
@@ -63,17 +66,17 @@ const OrderManagementPage = () => {
           size: itemsPerPage.toString(),
         });
 
-        console.log(filters.id)
+        console.log(filters.id);
 
         // Thêm các filter vào params nếu có giá trị
         if (filters.id) params.append('orderId', filters.id);
-        if (filters.phoneNumber) params.append('phoneNumber', filters.phoneNumber);
+        if (filters.phoneNumber)
+          params.append('phoneNumber', filters.phoneNumber);
         if (filters.status) params.append('status', filters.status);
         if (filters.orderDate) params.append('orderDate', filters.orderDate);
 
-        const res = (
-          await searchOrderByFilter({ params: params.toString() })
-        ).data;
+        const res = (await searchOrderByFilter({ params: params.toString() }))
+          .data;
 
         setFilteredOrders(res.data);
         setTotalPages(res.totalPages);
@@ -92,7 +95,7 @@ const OrderManagementPage = () => {
 
   const handleClear = () => {
     setFilters({
-      id: "",
+      id: '',
       phoneNumber: '',
       status: '',
       orderDate: '',
@@ -101,8 +104,9 @@ const OrderManagementPage = () => {
     setCurrentPage(1);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
+      await deleteOrderById(id)
       const updated = orders.filter((o) => o.id !== id);
       setOrders(updated);
       setFilteredOrders(

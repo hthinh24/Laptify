@@ -83,4 +83,12 @@ public class OrderController {
         return ResponseEntity
                 .ok(orderService.updateOrderStatus(request, orderId));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteOrderById(
+            @PathVariable("id") Long orderId
+    ){
+        return ResponseEntity
+                .ok(orderService.deleteOrderById( orderId));
+    }
 }

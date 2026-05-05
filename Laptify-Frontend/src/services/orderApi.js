@@ -25,7 +25,6 @@ export const getOrdersDisPlayForAdmin = ({ size = 5, page = 0 }) => {
 };
 
 export const searchOrderByFilter = ({ params }) => {
-
   return axiosClient.get(`/v1/orders/search?${params}`);
 };
 
@@ -35,4 +34,8 @@ export const updateOrderStatusForAdmin = (request, id) => {
 
 export const updateOrderForAdmin = (request, id) => {
   return axiosClient.put(`/v1/orders/${id}`, request);
+};
+
+export const deleteOrderById = ( id) => {
+  return axiosClient.delete(`/v1/orders/${id}`);
 };

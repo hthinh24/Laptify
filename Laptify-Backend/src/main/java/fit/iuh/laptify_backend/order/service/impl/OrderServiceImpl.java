@@ -203,6 +203,12 @@ public class OrderServiceImpl implements OrderService {
         return mapEntityToResponse(orderRepository.saveAndFlush(order));
     }
 
+    @Override
+    public Long deleteOrderById(Long orderId) {
+        orderRepository.deleteById(orderId);
+        return orderId;
+    }
+
     private void removeCartItemAfterOrder(List<OrderCreationRequest.ProductInfo> productInfos){
         try {
             User currentuser = authService.getCurrentUser();
