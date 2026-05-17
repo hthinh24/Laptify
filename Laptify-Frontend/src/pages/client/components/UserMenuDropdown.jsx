@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "@/feature/auth/authSlice.js";
 import { authService } from "@/services/auth/authService.js";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Container, Shield } from "lucide-react";
 
 const UserMenuDropdown = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +11,9 @@ const UserMenuDropdown = ({ user }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const isAdmin = user?.role === 'ADMIN'
+
+  console.log(isAdmin)
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -79,9 +82,19 @@ const UserMenuDropdown = ({ user }) => {
               className='flex items-center gap-2 px-4 py-2 text-sm text-foreground transition-all duration-200 hover:bg-accent hover:translate-x-1'
               onClick={() => setIsOpen(false)}
             >
-              <User className='size-4 transition-transform duration-200 group-hover:scale-110' />
+              <Container className='size-4 transition-transform duration-200 group-hover:scale-110' />
               Lịch sử mua hàng
             </Link>
+            {isAdmin && (
+              <Link
+                to='/admin'
+                className='flex items-center border-t gap-2 px-4 py-2 text-sm text-foreground transition-all duration-200 hover:bg-accent hover:translate-x-1'
+                onClick={() => setIsOpen(false)}
+              >
+                <Shield  className='size-4 transition-transform duration-200 group-hover:scale-110' />
+                Trang quản lý
+              </Link>
+            )}
           </nav>
 
           {/* Logout Button */}

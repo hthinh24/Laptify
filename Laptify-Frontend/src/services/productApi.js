@@ -8,6 +8,9 @@ export const getProducts = ({ page = 0, size = 5 }) => {
   return axiosClient.get(`/v1/products?${params.toString()}`);
 };
 
+export const searchProductsByProductsByCriteria = ({ params }) => {
+  return axiosClient.get(`/v1/products/filter?${params}`);
+};
 
 export const getProductSummaries = ({ page = 0, size = 5 }) => {
   const params = new URLSearchParams({

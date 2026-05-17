@@ -2,19 +2,12 @@ import { useState } from 'react';
 import { ChevronDown, Home, Box, ShoppingCart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils.js';
-import path from 'node:path';
 
 export default function SideBar() {
   const [expandedMenu, setExpandedMenu] = useState(null);
   const location = useLocation()
 
   const menuItems = [
-    {
-      id: 'dashboard',
-      label: 'Trang chủ',
-      icon: Home,
-      subItems: [],
-    },
     {
       id: 'products',
       label: 'Quản lý sản phẩm',
@@ -28,7 +21,7 @@ export default function SideBar() {
       id: 'orders',
       label: 'Quản lý đơn hàng',
       icon: ShoppingCart,
-      subItems: [{ label: 'Danh sách đơn hàng' , path: "/admin/orders"}, { label: 'Đơn hàng mới' }],
+      subItems: [{ label: 'Danh sách đơn hàng' , path: "/admin/orders"}],
     },
   ];
 

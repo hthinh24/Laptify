@@ -3,6 +3,7 @@ package fit.iuh.laptify_backend.product.service;
 import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.dto.request.ProductCreationRequest;
+import fit.iuh.laptify_backend.product.dto.request.ProductCriteria;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
 import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
 import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
@@ -21,4 +22,5 @@ public interface ProductService {
     PageResponse<List<ProductResponse>> getRelatedProducts(PageRequest page, RelatedProductFetchingRequest request);
     ProductDetailResponse getProductById(Long id);
     PageResponse<List<ProductSummaryResponse>> getProductsSummary(PageRequest page);
+    PageResponse<List<ProductSummaryResponse>> getProductsWithCriteria(ProductCriteria productFilter, PageRequest page);
 }

@@ -32,9 +32,8 @@ và đơn hàng.
 
 ### ⚙️ Dành cho Quản trị viên (Admin End)
 
-* **Quản lý vòng đời đơn hàng (Order Lifecycle):** Kiểm soát và cập nhật trạng thái đơn hàng (Chờ xác nhận -> Đang
+* **Quản lý vòng đời đơn hàng (Order Lifecycle):** Kiểm soát và cập nhật trạng thái đơn hàng (Chờ xác nhận -> Đang đóng gói -> Đang
   giao -> Hoàn thành/Đã hủy).
-* **Kiểm soát Tồn kho (Inventory Management):** Quản lý trạng thái In-stock/Out-of-stock, chống bán lố sản phẩm.
 * **Quản lý Sản phẩm & Phân loại:** Thêm, sửa, xóa thông tin Sku, giá cả, và cấu hình laptop.
 * **Lưu trữ Đa phương tiện (Media Management):** Tích hợp Cloudinary API để upload, tối ưu hóa kích thước và quản lý ảnh
   sản phẩm tập trung.
@@ -48,7 +47,6 @@ và đơn hàng.
 * **Framework:** React.js
 * **State Management:** Redux Toolkit
 * **Styling:** Tailwind CSS
-* **Data Visualization:** Recharts
 * **HTTP Client:** Axios
 
 **Backend:**

@@ -46,22 +46,22 @@ export default function ProductTable({
               products.map((product) => (
                 <tr key={product.id} className='hover:bg-gray-50 transition'>
                   <td className='px-6 py-4 text-sm text-gray-900'>
-                    {product.id}
+                    {product?.id}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-900'>
-                    {product.name}
+                    {product?.name}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.categoryName}
+                    {product?.categoryName}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.brandName}
+                    {product?.brandName}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.stockQuantity}
+                    {product?.stockQuantity}
                   </td>
                   <td className='px-6 py-4 text-sm text-gray-700'>
-                    {product.displayPrice.toLocaleString('vi-VN', {
+                    {product?.displayPrice.toLocaleString('vi-VN', {
                       style: 'currency',
                       currency: 'VND',
                     })}
@@ -69,14 +69,14 @@ export default function ProductTable({
                   <td className='px-6 py-4 text-center'>
                     <div className='flex items-center justify-center gap-2'>
                       <button
-                        onClick={() => onDelete(product.id)}
+                        onClick={() => onDelete(product?.id)}
                         className='p-2 text-red-600 hover:bg-red-50 rounded-md transition'
                         title='Xóa'
                       >
                         <Trash2 size={18} />
                       </button>
                       <button
-                        onClick={() => onEdit(product.id)}
+                        onClick={() => onEdit(product?.id)}
                         className='p-2 text-gray-600 hover:bg-gray-100 rounded-md transition'
                         title='Chỉnh sửa'
                       >

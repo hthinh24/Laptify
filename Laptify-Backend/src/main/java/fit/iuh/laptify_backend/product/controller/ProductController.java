@@ -3,6 +3,7 @@ package fit.iuh.laptify_backend.product.controller;
 import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.dto.request.ProductCreationRequest;
+import fit.iuh.laptify_backend.product.dto.request.ProductCriteria;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
 import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
 import fit.iuh.laptify_backend.product.dto.response.ProductDetailResponse;
@@ -77,6 +78,16 @@ public class ProductController {
     {
         PageRequest pageRequest = new PageRequest(page, size);
         return ResponseEntity.ok(productService.getProductsWithFilter(productFilter, pageRequest));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<PageResponse<List<ProductSummaryResponse>>> getProductsWithCriteria(
+            @ModelAttribute ProductCriteria productFilter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size)
+    {
+        PageRequest pageRequest = new PageRequest(page, size);
+        return ResponseEntity.ok(productService.getProductsWithCriteria(productFilter, pageRequest));
     }
 
     @GetMapping("/{id}")

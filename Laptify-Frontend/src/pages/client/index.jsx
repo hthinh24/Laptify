@@ -9,20 +9,20 @@ import { getCustomerInfo } from "@/feature/checkout/checkoutThunk.js";
 
 const RootPage = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth);
-
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const isAdmin = user?.role === 'ADMIN'
   // TODO: Replace with actual authentication check
 
   useEffect(() => {
-    if (isAuthenticated) {
-      console.log("Fetching user wishlist...");
+    if (isAuthenticated && !isAdmin) {
+      console.log('Fetching user wishlist...');
       dispatch(fetchUserWishlist());
       dispatch(getCart());
-      dispatch(getCustomerInfo())
+      dispatch(getCustomerInfo());
     } else {
-      console.log("User not authenticated, skipping wishlist fetch.");
+      console.log('User not authenticated, skipping wishlist fetch.');
     }
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, isAuthenticated, isAdmin]);
 
   return (
     <div className="flex min-h-screen flex-col">

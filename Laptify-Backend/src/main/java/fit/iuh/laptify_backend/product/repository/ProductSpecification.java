@@ -1,5 +1,6 @@
 package fit.iuh.laptify_backend.product.repository;
 
+import fit.iuh.laptify_backend.product.dto.request.ProductCriteria;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
 import fit.iuh.laptify_backend.product.entity.Product;
 import fit.iuh.laptify_backend.product.entity.Sku;
@@ -61,6 +62,39 @@ public class ProductSpecification {
             }
 
             predicates.add(cb.greaterThanOrEqualTo(root.get("skus").get("stockQuantity"), 1));
+
+            query.distinct(true);
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<Product> getCriteria(ProductCriteria filter) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.getName() != null && !filter.getName().isEmpty()) {
+                String keyword = "%" + filter.getName().toLowerCase() + "%";
+                Predicate namePredicate =
+                        cb.like(cb.lower(root.get("name")), keyword);
+                Predicate descriptionPredicate =
+                        cb.like(cb.lower(root.get("description")), keyword);
+                predicates.add(cb.or(namePredicate, descriptionPredicate));
+            }
+
+            if (filter.getBrandId() != null && !filter.getBrandId().isEmpty()) {
+                String getBrandCode = filter.getBrandId();
+                predicates.add(cb.equal(root.get("brand").get("id"), getBrandCode));
+            }
+
+            if (filter.getCategoryId() != null && !filter.getCategoryId().isEmpty()) {
+                Long categoryId = Long.parseLong(filter.getCategoryId());
+                predicates.add(cb.equal(root.get("category").get("id"), categoryId));
+            }
+
+            if (filter.getId() != null) {
+                Long productId = Long.parseLong(filter.getId());
+                predicates.add(cb.equal(root.get("id"), productId));
+            }
 
             query.distinct(true);
             return cb.and(predicates.toArray(new Predicate[0]));

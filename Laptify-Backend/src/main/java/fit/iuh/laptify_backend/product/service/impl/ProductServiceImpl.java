@@ -3,6 +3,7 @@ package fit.iuh.laptify_backend.product.service.impl;
 import fit.iuh.laptify_backend.product.dto.common.PageRequest;
 import fit.iuh.laptify_backend.product.dto.common.PageResponse;
 import fit.iuh.laptify_backend.product.dto.request.ProductCreationRequest;
+import fit.iuh.laptify_backend.product.dto.request.ProductCriteria;
 import fit.iuh.laptify_backend.product.dto.request.ProductFilter;
 import fit.iuh.laptify_backend.product.dto.request.RelatedProductFetchingRequest;
 import fit.iuh.laptify_backend.product.dto.response.*;
@@ -74,6 +75,16 @@ public class ProductServiceImpl implements ProductService {
         Page<ProductResponse> productResponses = products.map(this::mapToResponse);
         return buildPageResponse(productResponses);
     }
+
+    @Override
+    public PageResponse<List<ProductSummaryResponse>> getProductsWithCriteria(ProductCriteria productFilter, PageRequest page) {
+        log.info("Filtering products with criteria: {}", productFilter);
+        org.springframework.data.domain.PageRequest pageable = toPageable(page);
+        Page<Product> products = productRepository.findAll(ProductSpecification.getCriteria(productFilter), pageable);
+        Page<ProductSummaryResponse> productResponses = products.map(this::mapToProductSummaryResponse);
+        return buildPageResponse(productResponses);
+    }
+
 
     @Override
     public PageResponse<List<ProductResponse>> getRelatedProducts(PageRequest page,
@@ -211,7 +222,7 @@ public class ProductServiceImpl implements ProductService {
                     "No SKUs found for product with id: " + product.getId()
             );
         }
-        return product.getSkus().get(0);
+        return product.getSkus().getFirst();
     }
 
     private ProductResponse mapToResponse(Product product) {
@@ -227,6 +238,26 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+    private ProductSummaryResponse mapToProductSummaryResponse(Product product) {
+        Sku firstSku = getFirstSkuOrThrow(product);
+
+        // Calculate total stock quantity from all SKUs
+        Long totalStockQuantity = product.getSkus().stream()
+                .mapToLong(Sku::getStockQuantity)
+                .sum();
+
+        return ProductSummaryResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .categoryId(product.getCategory().getId())
+                .categoryName(product.getCategory().getName())
+                .brandId(product.getBrand().getId())
+                .brandName(product.getBrand().getName())
+                .stockQuantity(totalStockQuantity)
+                .displayPrice(firstSku.getPrice())
+                .build();
+    }
+
     private ProductDetailResponse mapToProductDetailResponse(Product product) {
         List<ProductSkuResponse> skuResponses = product.getSkus().stream()
                 .map(sku -> ProductSkuResponse.builder()
@@ -239,7 +270,6 @@ public class ProductServiceImpl implements ProductService {
                         .build())
                 .collect(Collectors.toList());
 
-        Sku firstSku = getFirstSkuOrThrow(product);
 
         return ProductDetailResponse.builder()
                 .id(String.valueOf(product.getId()))

@@ -120,7 +120,6 @@ const ProductDetailPage = () => {
         });
         toast.success('Sản phẩm đã tồn tại trong giỏ hàng');
       } else {
-        // Product doesn't exist, add to cart
         dispatch(addItemToCart({
           productId: productDetail.id,
           skuCode: skuCode,
