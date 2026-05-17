@@ -153,6 +153,14 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderDetail> orderDetails = buildOrderDetails(request.getProducts(), order);
 
+        // Validate stock and update sku stockQuantity and totalPurchases
+        Set<Sku> skusToUpdate = collectSkusToUpdate(orderDetails);
+
+        // Persist sku updates
+        if (!skusToUpdate.isEmpty()) {
+            skuRepository.saveAll(skusToUpdate);
+        }
+
         BigDecimal totalPrice = calculateTotalPrice(orderDetails);
         order.setTotalPrice(totalPrice);
         order.setShippingFee(BigDecimal.valueOf(30000));
@@ -286,6 +294,40 @@ public class OrderServiceImpl implements OrderService {
 
         order.setOrderDetails(orderDetails);
         return orderDetails;
+    }
+
+    /**
+     * Process order details: validate requested quantity, decrement stockQuantity and increment totalPurchases.
+     * Returns the set of SKUs that were changed and need to be persisted.
+     */
+    private Set<Sku> collectSkusToUpdate(List<OrderDetail> orderDetails) {
+        Set<Sku> skusToUpdate = new HashSet<>();
+
+        for (OrderDetail detail : orderDetails) {
+            Sku sku = detail.getSku();
+            if (sku == null) {
+                throw new EntityNotFoundException("Sku not found for order detail");
+            }
+
+            int requested = detail.getQuantity();
+            int available = sku.getStockQuantity() == null ? 0 : sku.getStockQuantity();
+
+            if (requested <= 0) {
+                throw new BadRequestException("Invalid quantity for sku: " + sku.getSkuCode());
+            }
+
+            if (available < requested) {
+                throw new BadRequestException("Insufficient stock for sku: " + sku.getSkuCode());
+            }
+
+            sku.setStockQuantity(available - requested);
+            Integer totalPurchases = sku.getTotalPurchases() == null ? 0 : sku.getTotalPurchases();
+            sku.setTotalPurchases(totalPurchases + 1);
+
+            skusToUpdate.add(sku);
+        }
+
+        return skusToUpdate;
     }
 
     private OrderResponse mapEntityToResponse(Order order){
