@@ -176,7 +176,7 @@ const OrderDetailClientPage = () => {
 
       {/* Pricing Section */}
       <PricingSection
-        subtotal={order.totalPrice}
+        subTotal={order.totalPrice}
         shipping={order.shippingFee}
         total={order.totalDue}
         showShipping={true}

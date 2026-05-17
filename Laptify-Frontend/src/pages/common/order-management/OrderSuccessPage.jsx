@@ -47,6 +47,8 @@ const OrderSuccessPage = () => {
     trackingCode = '#B6CT3',
   } = orderData;
 
+  console.log(subTotal)
+
   const handleViewDetails = () => {
     if(isAuthenticated)
     {
@@ -95,7 +97,7 @@ const OrderSuccessPage = () => {
 
           {/* Pricing */}
           <PricingSection
-            subtotal={subTotal}
+            subTotal={subTotal}
             shipping={shipping}
             total={total}
             showShipping={true}

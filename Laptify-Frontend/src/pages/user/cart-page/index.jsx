@@ -170,7 +170,7 @@ const CartPage = () => {
 
             <div className='lg:col-span-1'>
               <PricingSection
-                subtotal={totals.subtotal}
+                subTotal={totals.subtotal}
                 shipping={0}
                 total={totals.total}
                 showShipping={true}

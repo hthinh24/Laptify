@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button.jsx';
 import { getErrorMessage } from '@/lib/axiosClient.js';
 import OrderItemSection from '@/pages/common/order-management/OrderItemSection.jsx';
 import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
-import { getOrderById } from '@/services/orderApi.js';
+import { deleteOrderById, getOrderById } from '@/services/orderApi.js';
+import { orderStatuses } from '@/utils/orderHelper.js';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -97,14 +98,12 @@ const OrderDetailUserPage = () => {
   //     alert('Cập nhật đơn hàng thành công');
   //   };
 
-  //   const handleDelete = () => {
-  //     if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
-  //       // TODO: Call API to delete order
-  //       console.log('Deleting order:', id);
-  //       alert('Xóa đơn hàng thành công');
-  //       navigate(-1);
-  //     }
-  //   };
+
+  const handleDelete = async () => {
+      await deleteOrderById(id);
+  };
+
+  const orderStatusLabel = orderStatuses.find(status => status.value === formData.status)
 
   return (
     <div className='mx-auto max-w-7xl'>
@@ -155,7 +154,7 @@ const OrderDetailUserPage = () => {
             />
             <CustomInput
               label='Tình trạng đơn hàng'
-              value={formData.status}
+              value={orderStatusLabel?.label}
               disabled={true}
             />
           </div>
@@ -167,7 +166,7 @@ const OrderDetailUserPage = () => {
 
       {/* Pricing Section */}
       <PricingSection
-        subtotal={order.totalPrice}
+        subTotal={order.totalPrice}
         shipping={order.shippingFee}
         total={order.totalDue}
         showShipping={true}
@@ -176,6 +175,15 @@ const OrderDetailUserPage = () => {
         <Button className={'px-6 py-4'}>
           <Link to={'/'}>Trở về trang chủ</Link>
         </Button>
+        <ConfirmDialog
+          title='Xóa đơn hàng'
+          description='Bạn có chắc chắn muốn cóa đơn hàng này không?'
+          onConfirm={handleDelete}
+        >
+          <Button className='px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-medium'>
+            Xóa đơn hàng
+          </Button>
+        </ConfirmDialog>
       </div>
     </div>
   );

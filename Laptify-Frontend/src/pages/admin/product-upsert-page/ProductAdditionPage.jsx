@@ -83,7 +83,7 @@ const ProductAdditionPage = () => {
           return {
             color: variant.color,
             price: variant.price,
-            stockQuantity: variant.quantity,
+            stockQuantity: variant.stockQuantity,
             images: images.filter(Boolean),
           };
         })
