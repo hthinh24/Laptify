@@ -50,7 +50,7 @@ const HomePage = () => {
                 {/* Brand Header: Logo + Text */}
                 <div
                   ref={heroBrandRef}
-                  className="flex items-center gap-3 mb-4 opacity-0 opacity-90 hover:opacity-100 transition-opacity"
+                  className="flex items-center gap-3 mb-4 opacity-90 hover:opacity-100 transition-opacity"
                 >
                   {/* Logo Container */}
                   <img
@@ -81,7 +81,9 @@ const HomePage = () => {
                   className="inline-flex items-center text-white font-semibold text-base hover:text-red-500 transition-all duration-300 hover:scale-110 opacity-0 group"
                 >
                   Mua ngay
-                  <span className="ml-2 text-xl group-hover:translate-x-1 transition-transform">→</span>
+                  <span className="ml-2 text-xl group-hover:translate-x-1 transition-transform">
+                    →
+                  </span>
                 </Link>
               </div>
 

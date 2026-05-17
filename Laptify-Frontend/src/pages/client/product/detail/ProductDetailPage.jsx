@@ -105,7 +105,7 @@ const ProductDetailPage = () => {
     if (!currentSelectVariant) return;
 
     const skuCode = currentSelectVariant.skuCode;
-    
+
     // Check if product with this skuCode already exists in cart
     const existingItem = cart.find((item) => item.skuCode === skuCode);
 
@@ -131,7 +131,7 @@ const ProductDetailPage = () => {
       const message = getErrorMessage(e, 'Thêm sản phẩm vào giỏ hàng thất bại');
       toast.error(message);
     }
-  } 
+  }
 
   if (isLoading) {
     return (
@@ -163,7 +163,7 @@ const ProductDetailPage = () => {
       </div>
     );
   }
-  
+
   return (
     <div className='container mx-auto px-4 py-8'>
       {/* Breadcrumb */}
@@ -251,11 +251,10 @@ const ProductDetailPage = () => {
             </button>
             <button
               onClick={handleWishlistClick}
-              className={`px-6 py-3 rounded border-2 transition ${
-                isWishlisted
-                  ? 'border-red-600 bg-red-50'
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
+              className={`px-6 py-3 rounded border-2 transition ${isWishlisted
+                ? 'border-red-600 bg-red-50'
+                : 'border-gray-300 hover:border-gray-400'
+                }`}
             >
               <Heart
                 size={20}

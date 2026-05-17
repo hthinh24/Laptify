@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import ProductList from '../../common/product/ProductList';
 import { userProductSortOptions } from '@/data/mockSearchProducts';
 import { useSelector } from 'react-redux';
+import { getWishlistProducts } from '@/services/user/wishlistService';
 
 const UserWishlistPage = () => {
   const location = useLocation();
@@ -24,24 +25,17 @@ const UserWishlistPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const url = new URL(endpoint);
-        url.searchParams.append('page', currentPage - 1);
-        url.searchParams.append('size', itemsPerPage);
-
-        const response = await fetch(url.toString());
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-        const data = await response.json();
-        console.log("fetching data: ", data);
-        setUserWishlistResponse(data);
+        getWishlistProducts({ page: currentPage - 1, size: itemsPerPage }).then((response) => {
+          console.log("fetching data: ", response.data);
+          setUserWishlistResponse(response.data);
+        });
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     }
 
     fetchProduct();
+
   }, [endpoint, currentPage]);
 
   // Sort products

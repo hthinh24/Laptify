@@ -55,8 +55,7 @@ const AboutPage = () => {
       id: 2,
       icon: Headphones,
       title: "Chăm sóc khách hàng 24/7",
-      description:
-        "Hỗ trợ chăm sóc khách hàng hàng thần thiên và trực tuyến 24/7",
+      description: "Đội ngũ chăm sóc khách hàng thân thiệt và trực tuyến 24/7",
     },
     {
       id: 3,

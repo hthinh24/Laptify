@@ -201,39 +201,35 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="text-muted-foreground transition-colors hover:text-background"
                 aria-label="Facebook"
-              >
-              </a>
+              ></a>
               <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground transition-colors hover:text-background"
                 aria-label="Twitter"
-              >
-              </a>
+              ></a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground transition-colors hover:text-background"
                 aria-label="Instagram"
-              >
-              </a>
+              ></a>
               <a
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground transition-colors hover:text-background"
                 aria-label="LinkedIn"
-              >
-              </a>
+              ></a>
             </div>
           </div>
         </div>
       </div>
 
       {/* Copyright */}
-      <div className="border-t border-muted-foreground/20 py-4 text-center">
+      <div className=" border-muted-foreground/20 py-4 text-center">
         <p className="text-sm text-muted-foreground">
           &copy; Copyright Rimel 2022. All right reserved
         </p>

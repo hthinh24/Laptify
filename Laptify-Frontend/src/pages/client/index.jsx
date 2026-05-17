@@ -9,7 +9,7 @@ import { getCustomerInfo } from "@/feature/checkout/checkoutThunk.js";
 
 const RootPage = () => {
   const dispatch = useDispatch();
-    const { isAuthenticated } = useSelector((state) => state.auth); 
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   // TODO: Replace with actual authentication check
 

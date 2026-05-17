@@ -10,10 +10,8 @@ export const removeItem = (item) => {
     return axiosClient.delete(`/v1/wishlists/${item.productId}`)
 }
 
-export const getWishlist = (userId) => {
-    return axiosClient.get('/v1/wishlists', {
-        data: userId
-    })
+export const getWishlist = () => {
+    return axiosClient.get('/v1/wishlists')
 }
 
 export const getWishlistProducts = () => {
