@@ -102,7 +102,7 @@ export default function UserDetailSection({ user, onUpdate }) {
 
   return (
     <div className='bg-white rounded-lg shadow-md p-8'>
-      <h2 className='text-2xl font-bold text-red-600 mb-8'>Chỉnh sử hồ sơ</h2>
+      <h2 className='text-2xl font-bold mb-8'>Thông tin hồ sơ</h2>
 
       <form onSubmit={handleSubmit} className='space-y-6'>
         {/* Basic Info Section */}
@@ -176,7 +176,7 @@ export default function UserDetailSection({ user, onUpdate }) {
           <button
             type='submit'
             disabled={isLoading}
-            className='px-6 py-2 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition disabled:bg-red-400 disabled:cursor-not-allowed'
+            className='px-6 py-2 bg-green-600 text-white rounded-md font-medium hover:bg-green-700 transition disabled:bg-red-400 disabled:cursor-not-allowed'
           >
             {isLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
           </button>

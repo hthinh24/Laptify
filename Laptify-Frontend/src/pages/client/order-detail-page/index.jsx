@@ -4,19 +4,12 @@ import { getErrorMessage } from '@/lib/axiosClient.js';
 import OrderItemSection from '@/pages/common/order-management/OrderItemSection.jsx';
 import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
 import { getOrderByTrackingCode } from '@/services/orderApi.js';
-import { ChevronLeft } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 
 
-const orderStatuses = [
-  'Đơn hàng mới',
-  'Đang đóng gói',
-  'Đang vận chuyển',
-  'Đã giao',
-];
 const OrderDetailClientPage = () => {
   const { trackingCode } = useParams();
   const navigate = useNavigate();

@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
+    const { isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -263,7 +264,7 @@ const ProductDetailPage = () => {
                 }
               />
             </button>
-            <button
+            {isAuthenticated && <button
               onClick={handleAddToCart}
               className={`px-6 py-3 rounded border-2 transition border-gray-300 hover:border-gray-400 active:border-red-600`}
             >
@@ -271,7 +272,7 @@ const ProductDetailPage = () => {
                 size={20}
                 className='active:text-red-600 active:fill-red-600'
               />
-            </button>
+            </button>}
           </div>
 
           <Separator />

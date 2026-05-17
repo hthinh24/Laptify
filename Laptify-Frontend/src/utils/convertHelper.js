@@ -8,3 +8,7 @@ export function formatDate(dateString) {
         year: 'numeric',
     }).format(new Date(dateString));
 }
+
+export const getThumbnailUrl = (url, width = 40, height = 40) => {
+    return url.replace('/upload/', `/upload/w_${width},h_${height},c_fill/`);
+  };

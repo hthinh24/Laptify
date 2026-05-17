@@ -103,6 +103,7 @@ const OrderDetailUserPage = () => {
 
   const handleDelete = async () => {
       await deleteOrderById(id);
+      navigate(-1)
   };
 
   const orderStatusLabel = orderStatuses.find(status => status.value === formData.status)

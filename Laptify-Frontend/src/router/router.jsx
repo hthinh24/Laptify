@@ -18,14 +18,14 @@ import LoginPage from "@/pages/client/LoginPage.jsx";
 import ForgotPasswordPage from "@/pages/client/ForgotPasswordPage.jsx";
 import ContactPage from "@/pages/client/ContactPage.jsx";
 import AboutPage from "@/pages/client/about/AboutPage.jsx";
-import ProfilePage from "@/pages/user/profile/index.jsx";
 import DemoLoginPage from "@/pages/client/demo-auth.jsx";
 import NotFoundPage from "@/pages/client/NotFoundPage.jsx";
 import OrderSuccessPage from "@/pages/common/order-management/OrderSuccessPage.jsx";
 import OrderDetailClientPage from "@/pages/client/order-detail-page/index.jsx";
 import ProtectedRoute from "@/router/ProtectedRoute";
 import OrderDetailUserPage from "@/pages/user/order-detail-page/index.jsx";
-import UserAccountPage from "@/pages/user/profile/index.jsx";
+import UserOrderPage from "@/pages/user/order-page/index.jsx";
+import UserProfilePage from "@/pages/user/profile/index.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -141,7 +141,15 @@ export const router = createBrowserRouter([
         path: 'profile',
         element: (
           <ProtectedRoute>
-            <UserAccountPage/>
+            <UserProfilePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'order-history',
+        element: (
+          <ProtectedRoute>
+            <UserOrderPage />
           </ProtectedRoute>
         ),
       },
@@ -163,8 +171,8 @@ export const router = createBrowserRouter([
   {
     path: '/admin',
     element: (
-      <ProtectedRoute allowedRoles={["ADMIN"]}>
-      <AdminPage />
+      <ProtectedRoute allowedRoles={['ADMIN']}>
+        <AdminPage />
       </ProtectedRoute>
     ),
     children: [

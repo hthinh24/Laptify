@@ -1,9 +1,15 @@
 import { Button } from '@/components/ui/button.jsx';
 import CategoryDialog from '@/pages/admin/product-upsert-page/CategoryDialog.jsx';
+import { getThumbnailUrl } from '@/utils/convertHelper.js';
 import { Trash2, Edit3, Plus } from 'lucide-react';
 import { useState } from 'react';
 
-export default function CategoryTable({ variants = [], onEdit, onDelete, onAddVariant }) {
+export default function CategoryTable({
+  variants = [],
+  onEdit,
+  onDelete,
+  onAddVariant,
+}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVariant, setEditingVariant] = useState(null);
   const [dialogMode, setDialogMode] = useState('create');
@@ -32,6 +38,7 @@ export default function CategoryTable({ variants = [], onEdit, onDelete, onAddVa
     }
   };
 
+  console.log(variants);
   return (
     <div className='bg-white rounded-lg shadow-md p-6'>
       <div className='flex items-center justify-between mb-6'>
@@ -84,7 +91,7 @@ export default function CategoryTable({ variants = [], onEdit, onDelete, onAddVa
               </tr>
             ) : (
               variants.map((variant) => (
-                <tr key={variant.id} className='hover:bg-gray-50 transition'>
+                <tr key={variant.skuCode} className='hover:bg-gray-50 transition'>
                   <td className='px-4 py-4 text-sm text-gray-900'>
                     {variant.color}
                   </td>
@@ -98,9 +105,20 @@ export default function CategoryTable({ variants = [], onEdit, onDelete, onAddVa
                     {variant.stockQuantity}
                   </td>
                   <td className='px-4 py-4 text-center'>
-                    {variant.mediaMetadataList && variant.mediaMetadataList.length > 0 ? (
+                    {variant.mediaMetadataList &&
+                    variant.mediaMetadataList.length > 0 ? (
                       <img
-                        src={variant.mediaMetadataList[0].url}
+                        src={getThumbnailUrl(
+                          variant.mediaMetadataList[0]?.url,
+                          40,
+                          40
+                        )}
+                        alt={variant.color}
+                        className='w-10 h-10 rounded object-cover'
+                      />
+                    ) : variant.image ? (
+                      <img
+                        src={variant.image}
                         alt={variant.color}
                         className='w-10 h-10 rounded object-cover'
                       />

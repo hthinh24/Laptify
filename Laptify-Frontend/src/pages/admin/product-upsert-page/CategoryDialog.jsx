@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Upload } from 'lucide-react';
 import CustomInput from '@/components/custom/CustomInput.jsx';
+import { getThumbnailUrl } from '@/utils/convertHelper.js';
 
 export default function CategoryDialog({
   isOpen,
@@ -31,7 +32,7 @@ export default function CategoryDialog({
         editingVariant.mediaMetadataList &&
         editingVariant.mediaMetadataList.length > 0
       ) {
-        setPreviewImage(editingVariant.mediaMetadataList[0].url);
+        setPreviewImage(getThumbnailUrl(editingVariant.mediaMetadataList[0].url, 400, 400));
         setUploadedImages(editingVariant.mediaMetadataList);
       }
 
@@ -163,7 +164,9 @@ export default function CategoryDialog({
               label='Số lượng'
               placeholder='Nhập số lượng'
               value={formData.stockQuantity}
-              onChange={(e) => handleInputChange('stockQuantity', e.target.value)}
+              onChange={(e) =>
+                handleInputChange('stockQuantity', e.target.value)
+              }
               error={errors.stockQuantity}
               type='number'
             />
@@ -207,7 +210,7 @@ export default function CategoryDialog({
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-3'>
                 Danh sách ảnh minh họa
-                {errors.images && uploadedImages.length == 0 &&(
+                {errors.images && uploadedImages.length == 0 && (
                   <p className='text-xs text-red-500'>{errors.images}</p>
                 )}
               </label>
@@ -217,13 +220,20 @@ export default function CategoryDialog({
                     Chưa có ảnh nào
                   </div>
                 ) : (
-                  uploadedImages.map((image) => (
+                  uploadedImages.map((image, index) => (
                     <div
-                      key={image.id}
+                      key={index}
                       className='relative group rounded-lg overflow-hidden bg-white'
                     >
                       <img
-                        src={image.src}
+                        src={
+                          image.src ||
+                          getThumbnailUrl(
+                            image.url,
+                            100,
+                            100
+                          )
+                        }
                         alt={image.name}
                         className='w-full h-24 object-cover'
                       />

@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
       {/* Image Container */}
       <div className='relative h-56 bg-gray-100 flex items-center justify-center overflow-hidden'>
         <img
-          src={product.image}
+          src={product.mediaMetadata?.url}
           alt={product.name}
           className='w-full h-full object-cover group-hover:scale-105 transition'
         />
@@ -56,9 +56,10 @@ const ProductCard = ({ product }) => {
           <button
             onClick={handleWishlistClick}
             // className='bg-white rounded-full p-2 shadow hover:bg-red-600 hover:text-white transition'
-            className={isWishlisted ?
-              'bg-red-600 text-white rounded-full p-2 shadow transition hover:bg-red-300 hover:text-white' :
-              'bg-white rounded-full p-2 shadow hover:bg-red-300 hover:text-white transition'
+            className={
+              isWishlisted
+                ? 'bg-red-600 text-white rounded-full p-2 shadow transition hover:bg-red-300 hover:text-white'
+                : 'bg-white rounded-full p-2 shadow hover:bg-red-300 hover:text-white transition'
             }
           >
             <Heart size={18} />
@@ -72,14 +73,15 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Out of Stock Badge */}
-        {product.stockQuantity == 0 && (
-          console.log("Product is out of stock: ", product),
-          <div className='absolute inset-0 flex items-center justify-center'>
-            <div className='bg-black rounded-full w-24 h-24 flex items-center justify-center shadow-lg border-4 border-white'>
-              <p className='text-white font-bold text-center'>Hết hàng</p>
+        {product.stockQuantity == 0 &&
+          (console.log('Product is out of stock: ', product),
+          (
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <div className='bg-black rounded-full w-24 h-24 flex items-center justify-center shadow-lg border-4 border-white'>
+                <p className='text-white font-bold text-center'>Hết hàng</p>
+              </div>
             </div>
-          </div>
-        )}
+          ))}
       </div>
 
       {/* Product Info */}
@@ -90,11 +92,15 @@ const ProductCard = ({ product }) => {
 
         {/* Price */}
         <div className='mb-2'>
-          <p className='text-red-600 font-bold text-2xl'>{formatPrice(product.price)}</p>
+          <p className='text-red-600 font-bold text-2xl'>
+            {formatPrice(product.price)}
+          </p>
         </div>
 
         {/* Purchase Count */}
-        <p className='text-gray-600 text-xs'>{product.totalPurchases} lượt mua</p>
+        <p className='text-gray-600 text-xs'>
+          {product.totalPurchases} lượt mua
+        </p>
       </div>
     </div>
   );

@@ -24,13 +24,6 @@ const checkoutSlice = createSlice({
     },
     clearCheckout: (state) => {
       state.items = [];
-      state.customerInfo = {
-        customerName: '',
-        email: '',
-        address: '',
-        phoneNumber: '',
-        isSaved: false,
-      };
     },
   },
   extraReducers: (builder) => {
