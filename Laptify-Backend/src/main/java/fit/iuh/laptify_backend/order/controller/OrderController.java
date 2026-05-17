@@ -51,6 +51,16 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrders(pageRequest));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<?> getSelfOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @AuthenticationPrincipal(expression = "id") Long userId
+    ){
+        PageRequest pageRequest = new PageRequest(page, size);
+        return ResponseEntity.ok(orderService.getOrdersByUserId(pageRequest, userId));
+    }
+
     @GetMapping("/search")
     public ResponseEntity<PageResponse<List<OrderDisplayResponse>>> searchOrder(
             @ModelAttribute OrderFilter request,

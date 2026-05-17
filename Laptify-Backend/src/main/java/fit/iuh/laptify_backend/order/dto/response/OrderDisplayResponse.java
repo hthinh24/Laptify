@@ -18,5 +18,4 @@ public class OrderDisplayResponse {
     private LocalDateTime orderDate;
     private BigDecimal totalPrice;
     private String status;
-
 }

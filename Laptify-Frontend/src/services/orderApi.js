@@ -24,6 +24,15 @@ export const getOrdersDisPlayForAdmin = ({ size = 5, page = 0 }) => {
   return axiosClient.get(`/v1/orders?${params.toString()}`);
 };
 
+
+export const getSelfOrdersDisPlayForUser = ({ size = 5, page = 0 }) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    size: size.toString(),
+  });
+  return axiosClient.get(`/v1/orders/me?${params.toString()}`);
+};
+
 export const searchOrderByFilter = ({ params }) => {
   return axiosClient.get(`/v1/orders/search?${params}`);
 };

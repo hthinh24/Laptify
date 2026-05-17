@@ -141,16 +141,23 @@ const CartPage = () => {
         />
       )}
       {!isLoading && (
-        <div className='max-w-6xl mx-auto'>
+        <div className='max-w-7xl mx-auto'>
           {/* Header */}
-          <div className='mb-8'>
-            <h1 className='text-3xl font-bold text-gray-900 mb-2'>Giỏ hàng</h1>
-            <p className='text-gray-600'>
-              {cart.length} sản phẩm
-              {selectedItems.length > 0 &&
-                ` • ${selectedItems.length} được chọn`}
-            </p>
+          <div className=' border-gray-200'>
+              <div className='flex items-center gap-2 text-sm text-gray-600'>
+                <a href='/' className='hover:text-gray-900 transition'>
+                  Trang chủ
+                </a>
+                <span>/</span>
+                <span className='text-gray-900 font-medium'>
+                  Giỏ hàng của tôi
+                </span>
+              </div>
           </div>
+          <p className='text-gray-600  mt-4'>
+            {cart.length} sản phẩm
+            {selectedItems.length > 0 && ` ${selectedItems.length} được chọn`}
+          </p>
 
           {/* Cart Table */}
           <CartTable

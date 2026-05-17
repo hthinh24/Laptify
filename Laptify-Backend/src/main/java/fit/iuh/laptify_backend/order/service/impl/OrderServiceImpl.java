@@ -30,6 +30,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,22 @@ public class OrderServiceImpl implements OrderService {
 
         var pageResult = orderRepository.findAllOrdersWithPagination(pageable);
 
+        return PageResponse.<List<OrderDisplayResponse>>builder()
+                .page(pageResult.getNumber())
+                .size(pageResult.getSize())
+                .totalElements(pageResult.getTotalElements())
+                .totalPages(pageResult.getTotalPages())
+                .hasNext(pageResult.hasNext())
+                .data(pageResult.getContent())
+                .build();
+    }
+
+
+    @Override
+    public PageResponse<List<OrderDisplayResponse>> getOrdersByUserId(PageRequest page, Long userId) {
+        Pageable pageable = toPageable(page);
+
+        Page<OrderDisplayResponse> pageResult = orderRepository.findAllOrdersWithPaginationByUserId(pageable, userId);
         return PageResponse.<List<OrderDisplayResponse>>builder()
                 .page(pageResult.getNumber())
                 .size(pageResult.getSize())

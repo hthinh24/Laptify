@@ -25,6 +25,7 @@ import OrderSuccessPage from "@/pages/common/order-management/OrderSuccessPage.j
 import OrderDetailClientPage from "@/pages/client/order-detail-page/index.jsx";
 import ProtectedRoute from "@/router/ProtectedRoute";
 import OrderDetailUserPage from "@/pages/user/order-detail-page/index.jsx";
+import UserAccountPage from "@/pages/user/profile/index.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -140,7 +141,7 @@ export const router = createBrowserRouter([
         path: 'profile',
         element: (
           <ProtectedRoute>
-            <ProfilePage />
+            <UserAccountPage/>
           </ProtectedRoute>
         ),
       },

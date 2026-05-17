@@ -25,4 +25,5 @@ public interface OrderService {
     OrderResponse updateOrderStatus(OrderStatusUpdatingRequest orderStatus, Long orderId);
     PageResponse<List<OrderDisplayResponse>> searchOrderByFilter(Pageable page, OrderFilter orderFilter);
     Long deleteOrderById(Long orderId);
+    PageResponse<List<OrderDisplayResponse>> getOrdersByUserId(PageRequest page, Long userId);
 }

@@ -8,6 +8,10 @@ export default function OrderTable({ orders, onDelete, onEdit }) {
     const statusObj = orderStatuses.find((s) => s.value === status);
     return statusObj?.color || 'bg-gray-100 text-gray-800';
   };
+    const getStatusLabel = (status) => {
+      const statusObj = orderStatuses.find((s) => s.value === status);
+      return statusObj?.label || 'Không xác định';
+    };
   const currentItems = orders;
 
   return (
@@ -73,7 +77,7 @@ export default function OrderTable({ orders, onDelete, onEdit }) {
                         order.status
                       )}`}
                     >
-                      {order.status}
+                      {getStatusLabel(order.status)}
                     </span>
                   </td>
                   <td className='px-6 py-4 text-center'>

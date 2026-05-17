@@ -1,9 +1,11 @@
+import { ConfirmDialog } from '@/components/custom/ConfirmDialog.jsx';
 import CustomInput from '@/components/custom/CustomInput.jsx';
 import { Button } from '@/components/ui/button.jsx';
 import { getErrorMessage } from '@/lib/axiosClient.js';
 import OrderItemSection from '@/pages/common/order-management/OrderItemSection.jsx';
 import PricingSection from '@/pages/common/order-management/PricingSection.jsx';
 import { deleteOrderById, getOrderById } from '@/services/orderApi.js';
+import { formatDate } from '@/utils/convertHelper.js';
 import { orderStatuses } from '@/utils/orderHelper.js';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -149,7 +151,7 @@ const OrderDetailUserPage = () => {
           <div className='space-y-4'>
             <CustomInput
               label='Ngày đặt hàng'
-              value={formData.orderDate}
+              value={formatDate (formData.orderDate)}
               disabled={true}
             />
             <CustomInput
@@ -171,7 +173,7 @@ const OrderDetailUserPage = () => {
         total={order.totalDue}
         showShipping={true}
       />
-      <div className='flex justify-center my-6'>
+      <div className='flex justify-center my-6 gap-8'>
         <Button className={'px-6 py-4'}>
           <Link to={'/'}>Trở về trang chủ</Link>
         </Button>
