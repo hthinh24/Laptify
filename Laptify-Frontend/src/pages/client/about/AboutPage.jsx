@@ -141,7 +141,7 @@ const AboutPage = () => {
             nghệ, cam kết mang lại trải nghiệm tốt nhất cho khách hàng
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7.5 items-start">
             {teamMembers.map((member) => (
               <TeamMemberCard key={member.id} member={member} />
             ))}

@@ -21,8 +21,9 @@ public interface WishlistRepository extends JpaRepository<Wishlist, WishlistId> 
     @Query("SELECT w FROM Wishlist w " +
            "JOIN FETCH w.product p " +
            "LEFT JOIN FETCH p.skus s " +
-           "WHERE s.stockQuantity >= 1 " +
-           "AND w.user.id = :userId " +
+//           "WHERE s.stockQuantity >= 1 " +
+//           "AND w.user.id = :userId " +
+           "WHERE w.user.id = :userId " +
            "ORDER BY w.createdAt DESC")
     Page<Wishlist> getProductsInWishlist(Long userId, Pageable pageable);
 }

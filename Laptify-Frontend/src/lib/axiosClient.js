@@ -8,13 +8,19 @@ export const axiosClient = axios.create({
   withCredentials: true,
 });
 
-// 1. Request interceptor: Tự động đính kèm Access Token vào Header
 axiosClient.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const isPublicApi =
+      config.url?.includes("/auth/login") ||
+      config.url?.includes("/auth/register");
+
+    if (!isPublicApi) {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
     }
+
     return config;
   },
   (error) => Promise.reject(error),

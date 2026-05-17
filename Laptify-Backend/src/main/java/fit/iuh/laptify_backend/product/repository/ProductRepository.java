@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
            "LEFT JOIN FETCH p.skus s " +
            "WHERE s.stockQuantity >= 1 " +
            "ORDER BY p.createdAt DESC")
-    Page<Product> findNewProducts(Pageable pageable);
+    Page<Product> findNewProducts(Pageable pageable)    ;
 
     @EntityGraph(attributePaths = "skus")
     Optional<Product> findById(Long id);
